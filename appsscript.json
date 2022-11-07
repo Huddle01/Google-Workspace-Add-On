@@ -1,0 +1,76 @@
+{
+  "timeZone": "Asia/Kolkata",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Gmail",
+        "version": "v1",
+        "serviceId": "gmail"
+      },
+      {
+        "userSymbol": "Calendar",
+        "version": "v3",
+        "serviceId": "calendar"
+      }
+    ]
+  },
+  "addOns": {
+    "common": {
+      "name": "Huddle01 - Web3 Video Meetings",
+      "logoUrl": "https://lh3.googleusercontent.com/-HlLH08aKOjY/Y2HuOAnnwiI/AAAAAAAAANc/48QnIMbRzRMDXxjVwcAa8KhJZ-uRnpqqwCNcBGAsYHQ/s400/128_128.png",
+      "useLocaleFromApp": true,
+      "homepageTrigger": {
+        "runFunction": "onHomepage",
+        "enabled": true
+      },
+      "universalActions": [
+        {
+          "label": "Visit Huddle01",
+          "openLink": "https://huddle01.com"
+        }
+      ]
+    },
+    "calendar": {
+      "conferenceSolution": [
+        {
+          "id": 1,
+          "name": "Huddle01 - Web3 Video Meetings",
+          "logoUrl": "https://lh3.googleusercontent.com/-HlLH08aKOjY/Y2HuOAnnwiI/AAAAAAAAANc/48QnIMbRzRMDXxjVwcAa8KhJZ-uRnpqqwCNcBGAsYHQ/s400/128_128.png",
+          "onCreateFunction": "createConference"
+        }
+      ]
+    },
+    "gmail": {
+      "contextualTriggers": [
+        {
+          "unconditional": {},
+          "onTriggerFunction": "onGmailMessageOpen"
+        }
+      ],
+      "composeTrigger": {
+        "selectActions": [
+          {
+            "text": "Insert cat",
+            "runFunction": "onGmailCompose"
+          }
+        ],
+        "draftAccess": "NONE"
+      }
+    }
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/calendar.addons.execute",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/script.locale",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ],
+  "urlFetchWhitelist": [
+    "https://wpss2zlpb9.execute-api.us-east-1.amazonaws.com/new-meeting",
+    "https://us-central1-nfts-apis.cloudfunctions.net/createroom"
+  ],
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}
