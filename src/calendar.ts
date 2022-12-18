@@ -111,7 +111,7 @@ function createConference(arg) {
  * @return {Object}
  */
 function create3rdPartyConference(calendarEvent) {
-  const data = { title: "GCal Test", roomLock: true, meetingType: "gcal" };
+  const data = { title: "GCal Test", roomLock: false, meetingType: "gcal" };
 
   const responseHuddle = createHuddleMeetingWithApi(data);
 

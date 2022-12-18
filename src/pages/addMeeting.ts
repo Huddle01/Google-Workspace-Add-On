@@ -30,15 +30,15 @@ const createAddMeetingCard = (subject: string) => {
     // .setHeader(subject)
     .addWidget(textParagraph1)
     .addWidget(textInput)
-    .addWidget(divider)
-    .addWidget(textParagraph2)
-    .addWidget(
-      getSwitchGroup(
-        "Waiting Room",
-        "Only users admitted by the host can join the meeting",
-        "huddle01_form_roomLock"
-      )
-    )
+    // .addWidget(divider)
+    // .addWidget(textParagraph2)
+    // .addWidget(
+    //   getSwitchGroup(
+    //     "Waiting Room",
+    //     "Only users admitted by the host can join the meeting",
+    //     "huddle01_form_roomLock"
+    //   )
+    // )
     // .addWidget(divider)
     // .addWidget(textParagraph3)
     // .addWidget(
