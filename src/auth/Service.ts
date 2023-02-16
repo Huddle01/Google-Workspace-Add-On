@@ -554,10 +554,12 @@ class Service_ {
     if (this.tokenPayloadHandler_) {
       payload = this.tokenPayloadHandler_(payload);
     }
+
     var response = UrlFetchApp.fetch(url, {
       method: this.tokenMethod_,
+      contentType: "application/json",
       headers: headers,
-      payload: payload,
+      payload: JSON.stringify(payload),
       muteHttpExceptions: true,
     });
     return this.getTokenFromResponse_(response);

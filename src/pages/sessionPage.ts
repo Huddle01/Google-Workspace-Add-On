@@ -7,7 +7,8 @@ const getService = () => {
     .setCallbackFunction("authCallback")
     .setPropertyStore(PropertiesService.getUserProperties())
     .setCache(CacheService.getUserCache())
-    .setScope(scopes.join(" "));
+    .setScope(scopes.join(" "))
+    .setTokenFormat(TOKEN_FORMAT.JSON);
 };
 
 const authCallback = (callbackRequest) => {
