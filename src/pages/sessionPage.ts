@@ -22,6 +22,10 @@ const authCallback = (callbackRequest) => {
   console.log("Run authcallback!");
   const authorized = getService().handleCallback(callbackRequest);
   console.log(`${authorized}`);
+  if (authorized) {
+    const addr = callbackRequest.parameter["address"];
+    getService().getStorage().setValue("address", addr);
+  }
   return HtmlService.createHtmlOutput(
     "Success! <script>setTimeout(function() { top.window.close() }, 1)</script>"
   );
@@ -74,6 +78,12 @@ const buildAddOn = (e) => {
   //   Logger.log('Accesss token :',accessToken)
   //   console.log('Accesss token :',accessToken)
   checkAuth();
+
+  var service = getService();
+  var address = service.getStorage().getValue("address");
+
+  console.log("Address :", address);
+
   const section = CardService.newCardSection();
 
   const resetButton = CardService.newTextButton()
@@ -81,8 +91,11 @@ const buildAddOn = (e) => {
     .setOnClickAction(CardService.newAction().setFunctionName("logout"));
 
   const textWidget = CardService.newTextParagraph().setText("Hello World");
-
-  section.addWidget(textWidget).addWidget(resetButton);
+  // show accss token in text widget
+  const accessWidget = CardService.newTextParagraph().setText(
+    address || "Hwellu"
+  );
+  section.addWidget(textWidget).addWidget(resetButton).addWidget(accessWidget);
 
   const card = CardService.newCardBuilder()
     .setHeader(CardService.newCardHeader().setTitle("Addon Demo"))

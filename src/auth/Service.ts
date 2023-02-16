@@ -444,6 +444,8 @@ class Service_ {
       payload["code_verifier"] = callbackRequest.parameter.codeVerifier_;
     }
     var token = this.fetchToken_(payload);
+    console.log("handleCallbackToken", token);
+
     this.saveToken_(token);
     return true;
   };
@@ -574,6 +576,8 @@ class Service_ {
    */
   getTokenFromResponse_ = function (response) {
     var token = this.parseToken_(response.getContentText());
+    console.log(token);
+
     var resCode = response.getResponseCode();
     if (resCode < 200 || resCode >= 300 || token.error) {
       var reason = [
@@ -703,6 +707,8 @@ class Service_ {
    * @private
    */
   saveToken_ = function (token) {
+    console.log("saveToken_", token);
+
     this.getStorage().setValue(null, token);
   };
 
