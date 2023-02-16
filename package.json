@@ -9,7 +9,11 @@
   "keywords": [],
   "author": "Akshit1311",
   "license": "ISC",
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.55",
+    "@types/google-apps-script-oauth2": "^38.0.0"
+  },
   "dependencies": {
-    "@types/google-apps-script": "^1.0.55"
+    "apps-script-oauth2": "^0.0.1-security"
   }
 }

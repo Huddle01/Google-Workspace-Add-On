@@ -2,7 +2,24 @@
 # yarn lockfile v1
 
 
+"@types/google-apps-script-oauth2@^38.0.0":
+  version "38.0.0"
+  resolved "https://registry.yarnpkg.com/@types/google-apps-script-oauth2/-/google-apps-script-oauth2-38.0.0.tgz#9cf9a42908844e80ffead043ef10452d872c6dd9"
+  integrity sha512-TxaCxXmAb3/Qm/kSweW+PPIckNwLvZo6maGI0oKx/MBdl/WrZkPAY7Mi56qg2xPGBObqG80rmYU691SAHiUdJg==
+  dependencies:
+    "@types/google-apps-script" "*"
+
+"@types/google-apps-script@*":
+  version "1.0.57"
+  resolved "https://registry.yarnpkg.com/@types/google-apps-script/-/google-apps-script-1.0.57.tgz#44beb316a98d609de465bfb2e0b5aa1d2b63808c"
+  integrity sha512-w06Yoh+SamGpS2kGVlGy/5JkmFkLrW6u3tbglyHEu9uC9lrzqr6FyLcgVsL95Tmq9L0q//D8seqd4GZGRPPKUw==
+
 "@types/google-apps-script@^1.0.55":
   version "1.0.55"
   resolved "https://registry.yarnpkg.com/@types/google-apps-script/-/google-apps-script-1.0.55.tgz#cf426f361121d619db557d9e13610f015ee13a61"
   integrity sha512-rrZ2jUdroRbbbDNEYTi5HbxiJYa4K5cpanIzRaiK5bnI0GxRtROZUT8Zjt6IIrPp1SUL+8w+T5bR8ZLwF9FkBA==
+
+apps-script-oauth2@^0.0.1-security:
+  version "0.0.1-security"
+  resolved "https://registry.yarnpkg.com/apps-script-oauth2/-/apps-script-oauth2-0.0.1-security.tgz#caf150e47c413720609da8c97d30cd72b02f37bb"
+  integrity sha512-G4/1l3L/hpeRBWxh02Zk871HDBuFTbwl1f/NvTobRmVmhvNFbKmqB9xvNuxAHTUnwBKvOmCfeuoa5wpoK+BiXQ==
