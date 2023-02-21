@@ -1,6 +1,6 @@
 let lockRoom = false;
 
-const createAddMeetingCard = (subject: string) => {
+const createAddMeetingCardSection = (subject: string) => {
   const textParagraph1 =
     CardService.newTextParagraph().setText("<b>Meeting ID</b>");
   const textParagraph2 =
@@ -27,6 +27,7 @@ const createAddMeetingCard = (subject: string) => {
 
   const buttonSet = CardService.newButtonSet().addButton(button);
   const cardSection = CardService.newCardSection()
+    .addWidget(startMeetingStrip)
     // .setHeader(subject)
     .addWidget(textParagraph1)
     .addWidget(textInput)
@@ -56,17 +57,30 @@ const createAddMeetingCard = (subject: string) => {
     // )
     .addWidget(buttonSet);
 
+  return cardSection;
+};
+
+const createAddMeetingCard = (subject: string) => {
+  const cardSection = createAddMeetingCardSection(subject);
+
   const card = CardService.newCardBuilder().addSection(cardSection);
 
   return card.build();
 };
 
 function loginCallback(e) {
-  const isRoomLocked = !!e.formInput.huddle01_form_roomLock;
+  const service = getService();
+
+  const address = service.getStorage().getValue("address");
+
+  console.log("Address :", address);
+
+  const isRoomLocked = true;
 
   const data = {
     title: e.formInput.huddle01_form_title,
     roomLock: isRoomLocked,
+    hostWallets: [address],
   };
 
   const result = JSON.parse(createHuddleMeetingWithApi(data));

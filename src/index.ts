@@ -1,3 +1,3 @@
 const onHomepage = () => {
-  return createHomeCard();
+  return createHome();
 };

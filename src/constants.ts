@@ -6,3 +6,5 @@ const scopes = [
   "https://www.googleapis.com/auth/gmail.addons.execute",
   "https://www.googleapis.com/auth/gmail.addons.current.message.readonly",
 ];
+
+const EMAIL = Session.getActiveUser().getEmail();

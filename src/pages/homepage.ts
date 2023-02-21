@@ -1,44 +1,36 @@
-const createHomeCard = () => {
-  const email = Session.getActiveUser().getEmail();
+const createHome = () => {
+  const authUrl = getAuthUrl();
 
-  const camIcon = CardService.newIconImage().setIcon(
-    CardService.Icon.VIDEO_CAMERA
-  );
-  const calIcon = CardService.newIconImage().setIcon(CardService.Icon.INVITE);
-
-  const camDecoratedText = CardService.newDecoratedText()
-    .setText("https://app.huddle01.com/")
-    .setStartIcon(camIcon)
-    .setOpenLink(
-      CardService.newOpenLink()
-        .setUrl("https://app.huddle01.com/")
-        .setOpenAs(CardService.OpenAs.FULL_SIZE)
-        .setOnClose(CardService.OnClose.RELOAD_ADD_ON)
+  const LoginButton = CardService.newTextButton()
+    .setText("Login")
+    .setBackgroundColor("blue")
+    .setAuthorizationAction(
+      CardService.newAuthorizationAction().setAuthorizationUrl(authUrl)
     )
-    .setTopLabel("Start a Meeting");
+    .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
 
-  // const textParagraph = CardService.newTextParagraph().setText(
-  //   "<b>Scheduled Meetings</b>"
-  // );
+  const LogoutButton = CardService.newTextButton()
+    .setText("Logout")
+    .setBackgroundColor("blue")
+    .setOnClickAction(CardService.newAction().setFunctionName("logout"));
 
-  // const calDecoratedText = CardService.newDecoratedText()
-  //   .setText("https://app.huddle01.com/roomId")
-  //   .setStartIcon(calIcon)
-  //   .setOpenLink(
-  //     CardService.newOpenLink()
-  //       .setUrl("https://app.huddle01.com/roomId")
-  //       .setOpenAs(CardService.OpenAs.FULL_SIZE)
-  //       .setOnClose(CardService.OnClose.RELOAD_ADD_ON)
-  //   )
-  //   .setTopLabel("EventName/RoomName");
+  var cardSection = CardService.newCardSection();
 
-  const cardSection = CardService.newCardSection().addWidget(camDecoratedText);
-  // .addWidget(textParagraph)
-  // .addWidget(calDecoratedText);
+  if (checkAuth()) {
+    cardSection = createAddMeetingCardSection("New Meeting");
+    cardSection.addWidget(LogoutButton);
+  } else {
+    cardSection.addWidget(welcomeImage).addWidget(LoginButton);
+  }
 
-  const card = CardService.newCardBuilder()
-    .setHeader(CardService.newCardHeader().setTitle(email))
+  // const cardSectionWithWidgets = CardService.newCardSection()
+  //   .addWidget(camDecoratedText)
+  //   .addWidget(welcomeImage)
+  //   .addWidget(LoginButton);
+
+  const home = CardService.newCardBuilder()
+    .setHeader(CardService.newCardHeader().setTitle(EMAIL))
     .addSection(cardSection);
 
-  return card.build();
+  return home.build();
 };
