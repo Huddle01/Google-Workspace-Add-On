@@ -13,9 +13,8 @@ const authCallback = (callbackRequest) => {
     const addr = callbackRequest.parameter["address"];
     getService().getStorage().setValue("address", addr);
   }
-  return HtmlService.createHtmlOutput(
-    "Success! <script>setTimeout(function() { top.window.close() }, 1)</script>"
-  );
+
+  return HtmlService.createHtmlOutputFromFile("success");
 };
 
 const getAuthUrl = () => {
