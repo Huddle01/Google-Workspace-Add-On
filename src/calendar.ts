@@ -72,6 +72,16 @@ function createConference(arg) {
         .setUri(conferenceInfo.videoUri);
       dataBuilder.addEntryPoint(videoEntryPoint);
     }
+  } else if (conferenceInfo.error === "AUTH") {
+    // Authenentication error. Implement a function to build the correct
+    // authenication URL for the third-party conferencing system.
+    var authenticationUrl = getAuthUrl();
+    var error = ConferenceDataService.newConferenceError()
+      .setConferenceErrorType(
+        ConferenceDataService.ConferenceErrorType.AUTHENTICATION
+      )
+      .setAuthenticationUrl(authenticationUrl);
+    dataBuilder.setError(error);
   } else {
     // Other error type;
     var error =
@@ -111,7 +121,26 @@ function createConference(arg) {
  * @return {Object}
  */
 function create3rdPartyConference(calendarEvent) {
-  const data = { title: "GCal Test", roomLock: false, meetingType: "gcal" };
+  if (!checkAuth()) {
+    return { error: "AUTH" };
+  }
+
+  const service = getService();
+
+  const address = service.getStorage().getValue("address");
+
+  console.log("Address :", address);
+
+  if (!address) {
+    return { error: "AUTH" };
+  }
+
+  const data = {
+    title: "GCal Test",
+    roomLock: true,
+    meetingType: "gcal",
+    hostWallets: [address],
+  };
 
   const responseHuddle = createHuddleMeetingWithApi(data);
 
