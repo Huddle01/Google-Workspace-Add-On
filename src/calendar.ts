@@ -136,17 +136,27 @@ function create3rdPartyConference(calendarEvent) {
   }
 
   const data = {
-    title: "GCal Test",
-    roomLock: true,
-    meetingType: "gcal",
-    hostWallets: [address],
+    title: "GCal Meeting",
+    createdFrom: "OTHER",
+    otherSource: "GCAL",
+    hostWallets: [address.toLowerCase()],
+    roomLocked: true,
   };
 
   const responseHuddle = createHuddleMeetingWithApi(data);
 
   const jsonObjHuddle = JSON.parse(responseHuddle);
 
-  return { id: jsonObjHuddle.roomId, videoUri: jsonObjHuddle.roomUrl };
+  console.log("Huddle Response Obj :", {
+    id: jsonObjHuddle.roomId,
+    videoUri: jsonObjHuddle.data.meetingLink,
+    data,
+  });
+
+  return {
+    id: jsonObjHuddle.data.roomId,
+    videoUri: jsonObjHuddle.data.meetingLink,
+  };
 }
 
 /*

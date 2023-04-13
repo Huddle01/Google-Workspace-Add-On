@@ -71,7 +71,8 @@
     "https://wpss2zlpb9.execute-api.us-east-1.amazonaws.com/new-meeting",
     "https://us-central1-nfts-apis.cloudfunctions.net/createroom",
     "https://api.identity.testing.huddle01.com/verify",
-    "https://gauth.huddle01.com/auth"
+    "https://gauth.huddle01.com/auth",
+    "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting"
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"

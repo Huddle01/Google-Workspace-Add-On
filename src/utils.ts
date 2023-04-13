@@ -50,8 +50,10 @@ function handleSwitchChange() {
 }
 
 const createHuddleMeetingWithApi = (data) => {
+  // const CREATE_NEW_ROOM_LINK =
+  //   "https://us-central1-nfts-apis.cloudfunctions.net/createroom";
   const CREATE_NEW_ROOM_LINK =
-    "https://us-central1-nfts-apis.cloudfunctions.net/createroom";
+    "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting";
 
   const CREATE_NEW_ROOM_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions =
     {
