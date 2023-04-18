@@ -75,11 +75,9 @@ function loginCallback(e) {
 
   console.log("Address :", address);
 
-  const isRoomLocked = true;
-
   const data = {
     title: e.formInput.huddle01_form_title,
-    roomLock: isRoomLocked,
+    roomLocked: true,
     hostWallets: [address],
   };
 
