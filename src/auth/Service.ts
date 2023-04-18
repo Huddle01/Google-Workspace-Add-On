@@ -571,7 +571,7 @@ console.log({code, error})
       payload: JSON.stringify(payload),
       muteHttpExceptions: true,
     });
-    console.log({response})
+    console.log({responseStr: response.getContentText()})
     console.log('fetch token_ done')
     return this.getTokenFromResponse_(response);
   };
