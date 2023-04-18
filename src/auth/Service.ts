@@ -576,9 +576,11 @@ class Service_ {
    */
   getTokenFromResponse_ = function (response) {
     var token = this.parseToken_(response.getContentText());
-    console.log(token);
+    console.log('getTokenFromResponse')
+    console.log({token});
 
     var resCode = response.getResponseCode();
+    console.log({ resCode })
     if (resCode < 200 || resCode >= 300 || token.error) {
       var reason = [
         token.error,
