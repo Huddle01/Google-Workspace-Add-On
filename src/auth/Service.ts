@@ -562,7 +562,7 @@ console.log({code, error})
       payload = this.tokenPayloadHandler_(payload);
     }
 
-    console.log({payload,url})
+    console.log({payload,url,headers,tokenMethod_: this.tokenMethod_})
 
     var response = UrlFetchApp.fetch(url, {
       method: this.tokenMethod_,
