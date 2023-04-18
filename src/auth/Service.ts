@@ -580,8 +580,10 @@ class Service_ {
    * @private
    */
   getTokenFromResponse_ = function (response) {
-    var token = this.parseToken_(response.getContentText());
     console.log('getTokenFromResponse')
+var respContentText = response.getContentText();
+    console.log({respContentText})
+    var token = this.parseToken_(response.getContentText());
     console.log({token});
 
     var resCode = response.getResponseCode();
