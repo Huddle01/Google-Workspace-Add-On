@@ -420,8 +420,10 @@ class Service_ {
    * @return {boolean} True if authorization was granted, false if it was denied.
    */
   handleCallback = function (callbackRequest) {
+    console.log('in handleCallback')
     var code = callbackRequest.parameter.code;
     var error = callbackRequest.parameter.error;
+console.log({code, error})
     if (error) {
       if (error == "access_denied") {
         return false;
@@ -440,13 +442,15 @@ class Service_ {
       redirect_uri: this.getRedirectUri(),
       grant_type: "authorization_code",
     };
+    console.log({payload})
     if (callbackRequest.parameter.codeVerifier_) {
       payload["code_verifier"] = callbackRequest.parameter.codeVerifier_;
     }
     var token = this.fetchToken_(payload);
-    console.log("handleCallbackToken", token);
+    console.log("handleCallbackToken", {token});
 
     this.saveToken_(token);
+    console.log('handleCallback done')
     return true;
   };
 
