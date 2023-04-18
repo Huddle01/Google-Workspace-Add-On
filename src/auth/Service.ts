@@ -546,6 +546,7 @@ class Service_ {
    */
   fetchToken_ = function (payload, optUrl) {
     // Use the configured token URL unless one is specified.
+    console.log('in fetch token')
     var url = optUrl || this.tokenUrl_;
     var headers = {
       Accept: this.tokenFormat_,
@@ -557,6 +558,8 @@ class Service_ {
       payload = this.tokenPayloadHandler_(payload);
     }
 
+    console.log({payload})
+
     var response = UrlFetchApp.fetch(url, {
       method: this.tokenMethod_,
       contentType: "application/json",
@@ -564,6 +567,8 @@ class Service_ {
       payload: JSON.stringify(payload),
       muteHttpExceptions: true,
     });
+    console.log({response})
+    console.log('fetch token_ done')
     return this.getTokenFromResponse_(response);
   };
 
@@ -609,22 +614,28 @@ class Service_ {
    */
   parseToken_ = function (content) {
     var token;
+    console.log('in parsetoken_')
+    console.log({tokenfmt:this.tokenFormat_})
     if (this.tokenFormat_ == TOKEN_FORMAT.JSON) {
+      console.log('in json')
       try {
         token = JSON.parse(content);
       } catch (e) {
         throw new Error("Token response not valid JSON: " + e);
       }
     } else if (this.tokenFormat_ == TOKEN_FORMAT.FORM_URL_ENCODED) {
+      console.log('in url encoded')
       token = content.split("&").reduce(function (result, pair) {
         var parts = pair.split("=");
         result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
         return result;
       }, {});
     } else {
+      console.log('unknown fmt')
       throw new Error("Unknown token format: " + this.tokenFormat_);
     }
     this.ensureExpiresAtSet_(token);
+    console.log('parsetoken_ done')
     return token;
   };
 
