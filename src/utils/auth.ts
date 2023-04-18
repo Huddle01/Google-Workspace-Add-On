@@ -3,7 +3,7 @@ const authCallback = (callbackRequest) => {
 
   // the callbackReq is a url req which needs to be parse
   // callback url will have code in body which we will store
-  // then call handlecallback which will redirect the callbackrequest to https://api.identity.testing.huddle01.com/verify for verifaction
+  // then call handlecallback which will redirect the callbackrequest to https://iriko.testing.huddle01.com/verify for verifaction
   // if repsonse code 200 then authorized is true else fa
   Logger.log("Run authcallback!");
   console.log("Run authcallback!");
