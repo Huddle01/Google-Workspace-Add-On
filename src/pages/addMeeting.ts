@@ -78,7 +78,7 @@ function loginCallback(e) {
   const data = {
     title: e.formInput.huddle01_form_title,
     roomLocked: true,
-    hostWallets: [address],
+    hostWallets: [address.toLowerCase()],
   };
 
   const result = JSON.parse(createHuddleMeetingWithApi(data));

@@ -50,8 +50,25 @@ function handleSwitchChange() {
 }
 
 const createHuddleMeetingWithApi = (data) => {
-  // const CREATE_NEW_ROOM_LINK =
-  //   "https://us-central1-nfts-apis.cloudfunctions.net/createroom";
+  const GET_SUBDOMAIN_ID_LINK ="https://iriko.testing.huddle01.com/api/v1/admin/get-subdomain"
+  const GET_SUBDOMAIN_ID_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": HUDDLE_API_KEY,
+    },
+    payload: JSON.stringify({walletAddress: data.walletAddress}), 
+  };
+
+  const subdomainResponse = UrlFetchApp.fetch(
+    GET_SUBDOMAIN_ID_LINK,
+    GET_SUBDOMAIN_ID_OPTIONS
+  ).getContentText();
+  
+  const parsedSubdomainResponse = JSON.parse(subdomainResponse);
+
+  console.log({parsedSubdomainResponse})
+  
   const CREATE_NEW_ROOM_LINK =
     "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting";
 
@@ -62,8 +79,10 @@ const createHuddleMeetingWithApi = (data) => {
         "Content-Type": "application/json",
         "x-api-key": HUDDLE_API_KEY,
       },
-      payload: JSON.stringify(data),
+      payload: JSON.stringify({...data}),
     };
+
+
 
   const responseHuddle = UrlFetchApp.fetch(
     CREATE_NEW_ROOM_LINK,
