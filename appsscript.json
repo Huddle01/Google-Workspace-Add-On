@@ -72,7 +72,8 @@
     "https://us-central1-nfts-apis.cloudfunctions.net/createroom",
     "https://iriko.testing.huddle01.com/verify",
     "https://gauth.huddle01.com/auth",
-    "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting"
+    "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting",
+    "https://iriko.testing.huddle01.com/api/v1/admin/get-subdomain"
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"

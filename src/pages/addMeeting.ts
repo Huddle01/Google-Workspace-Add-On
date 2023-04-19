@@ -73,25 +73,25 @@ function loginCallback(e) {
 
   const address = service.getStorage().getValue("address");
 
-  console.log("Address :", address);
+  console.log("Address:", address);
 
   const data = {
     title: e.formInput.huddle01_form_title,
     roomLocked: true,
     hostWallets: [address.toLowerCase()],
   };
-
-  const result = JSON.parse(createHuddleMeetingWithApi(data));
+const huddleResponse =createHuddleMeetingWithApi(data)
+const result = JSON.parse(huddleResponse.response);
 
   const button = CardService.newTextButton()
     .setText("Join Meeting")
-    .setOpenLink(CardService.newOpenLink().setUrl(result.roomUrl));
+    .setOpenLink(CardService.newOpenLink().setUrl(result.data.meetingLink));
 
   return CardService.newCardBuilder()
     .setHeader(CardService.newCardHeader().setTitle("Meeting Created"))
     .addSection(
       CardService.newCardSection()
-        .addWidget(CardService.newKeyValue().setContent(result.roomUrl))
+        .addWidget(CardService.newKeyValue().setContent(result.data.meetingLink))
         .addWidget(button)
     )
     .build();

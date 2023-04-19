@@ -129,8 +129,6 @@ function create3rdPartyConference(calendarEvent) {
 
   const address = service.getStorage().getValue("address");
 
-  console.log("Address :", address);
-
   if (!address) {
     return { error: "AUTH" };
   }
@@ -144,8 +142,8 @@ function create3rdPartyConference(calendarEvent) {
   };
 
   const responseHuddle = createHuddleMeetingWithApi(data);
-
-  const jsonObjHuddle = JSON.parse(responseHuddle);
+  
+  const jsonObjHuddle = JSON.parse(responseHuddle.response);
 
   console.log("Huddle Response Obj :", {
     id: jsonObjHuddle.roomId,

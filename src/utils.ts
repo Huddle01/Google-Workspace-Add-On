@@ -57,39 +57,40 @@ const createHuddleMeetingWithApi = (data) => {
       "Content-Type": "application/json",
       "x-api-key": HUDDLE_API_KEY,
     },
-    payload: JSON.stringify({walletAddress: data.walletAddress}), 
+    payload: JSON.stringify({walletAddress:data.hostWallets[0]}) 
   };
 
   const subdomainResponse = UrlFetchApp.fetch(
     GET_SUBDOMAIN_ID_LINK,
     GET_SUBDOMAIN_ID_OPTIONS
-  ).getContentText();
-  
-  const parsedSubdomainResponse = JSON.parse(subdomainResponse);
+  )
 
+  const parsedSubdomainResponse = JSON.parse(subdomainResponse.getContentText())
   console.log({parsedSubdomainResponse})
-  
+if(parsedSubdomainResponse.subdomain[0]){
+  data.subdomainId = parsedSubdomainResponse.subdomain[0].id
+}
   const CREATE_NEW_ROOM_LINK =
-    "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting";
-
+  "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting";
+  
   const CREATE_NEW_ROOM_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions =
-    {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": HUDDLE_API_KEY,
-      },
-      payload: JSON.stringify({...data}),
-    };
-
-
-
+  {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": HUDDLE_API_KEY,
+    },
+    payload: JSON.stringify({...data}),
+  };
+  
+  
+  
   const responseHuddle = UrlFetchApp.fetch(
     CREATE_NEW_ROOM_LINK,
     CREATE_NEW_ROOM_OPTIONS
-  );
+    );
+    console.log(responseHuddle.getContentText())
+    
 
-  console.log(responseHuddle.getContentText());
-
-  return responseHuddle.getContentText();
+  return {response:responseHuddle.getContentText(),subdomain:subdomainResponse.getContentText()};
 };
