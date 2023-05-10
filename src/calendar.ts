@@ -1,6 +1,4 @@
 const BASE_DOMAIN = "app.huddle01.com";
-const CREATE_NEW_ROOM_LINK =
-  "https://wpss2zlpb9.execute-api.us-east-1.amazonaws.com/new-meeting";
 
 interface IConferenceInfo {
   id: string;
@@ -57,14 +55,6 @@ function createConference(arg) {
     dataBuilder
       .setConferenceId(conferenceInfo.id)
       .addConferenceParameter(conferenceTypeParameter);
-
-    // conferenceInfo.numbers.forEach(function(number) {
-    //   var phoneEntryPoint = ConferenceDataService.newEntryPoint()
-    //     .setEntryPointType(ConferenceDataService.EntryPointType.PHONE)
-    //     .setUri('tel:' + number)
-    //     .setPin(conferenceInfo.phonePin);
-    //   dataBuilder.addEntryPoint(phoneEntryPoint);
-    // });
 
     if (conferenceInfo.videoUri) {
       var videoEntryPoint = ConferenceDataService.newEntryPoint()
@@ -142,7 +132,7 @@ function create3rdPartyConference(calendarEvent) {
   };
 
   const responseHuddle = createHuddleMeetingWithApi(data);
-  
+
   const jsonObjHuddle = JSON.parse(responseHuddle.response);
 
   console.log("Huddle Response Obj :", {

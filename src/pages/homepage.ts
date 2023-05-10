@@ -23,11 +23,6 @@ const createHome = () => {
     cardSection.addWidget(welcomeImage).addWidget(LoginButton);
   }
 
-  // const cardSectionWithWidgets = CardService.newCardSection()
-  //   .addWidget(camDecoratedText)
-  //   .addWidget(welcomeImage)
-  //   .addWidget(LoginButton);
-
   const home = CardService.newCardBuilder()
     .setHeader(CardService.newCardHeader().setTitle(EMAIL))
     .addSection(cardSection);
