@@ -1,6 +1,8 @@
 let lockRoom = false;
 
 const createAddMeetingCardSection = (subject: string) => {
+  const service = getService();
+
   const textParagraph1 =
     CardService.newTextParagraph().setText("<b>Meeting ID</b>");
 
@@ -10,6 +12,8 @@ const createAddMeetingCardSection = (subject: string) => {
     .setHint("*Room Name that can be changed*")
     .setValue(subject);
 
+  const address = service.getStorage().getValue("address");
+    const MyWalletAddress =CardService.newTextParagraph().setText("<b>My Wallet Address: </b> " + address);
   //Button
   const action = CardService.newAction().setFunctionName("loginCallback");
 
@@ -20,6 +24,7 @@ const createAddMeetingCardSection = (subject: string) => {
 
   const buttonSet = CardService.newButtonSet().addButton(button);
   const cardSection = CardService.newCardSection()
+    .addWidget(MyWalletAddress)
     .addWidget(startMeetingStrip)
     .addWidget(textParagraph1)
     .addWidget(textInput)
@@ -53,8 +58,8 @@ function loginCallback(e) {
 
   if(!defaultSubdomainId){
     const subdomainResponse = fetchSubdomains(address);
-    const subdomainId = subdomainResponse[0].id;
-    const subdomainName = subdomainResponse[0].name
+    const subdomainId = subdomainResponse[0]?.id;
+    const subdomainName = subdomainResponse[0]?.name
 
     if(subdomainId){
       data.subdomainId =subdomainId;

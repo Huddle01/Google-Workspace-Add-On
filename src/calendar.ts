@@ -135,8 +135,10 @@ function create3rdPartyConference(calendarEvent) {
 
   if(!defaultSubdomainId){
     const subdomainResponse = fetchSubdomains(address);
-    const subdomainId = subdomainResponse[0].id;
-    const subdomainName = subdomainResponse[0].name
+
+
+    const subdomainId = subdomainResponse[0]?.id;
+    const subdomainName = subdomainResponse[0]?.name
 
     if(subdomainId){
       data.subdomainId =subdomainId;

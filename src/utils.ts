@@ -50,7 +50,7 @@ function handleSwitchChange() {
 }
 
 const fetchSubdomains = (address:string) => {
-  const GET_SUBDOMAIN_ID_LINK ="  "
+  const GET_SUBDOMAIN_ID_LINK ="https://iriko.testing.huddle01.com/api/v1/admin/get-subdomain"
   const GET_SUBDOMAIN_ID_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
     method: "post",
     headers: {

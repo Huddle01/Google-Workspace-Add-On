@@ -20,10 +20,8 @@ const createHome = () => {
   if (checkAuth()) {
     cardSection = createAddMeetingCardSection("New Meeting");
     cardSection.addWidget(LogoutButton);
-    // add text paragraph
+
     const address = service.getStorage().getValue("address");
-    const MyWalletAddress =CardService.newTextParagraph().setText("My Wallet Address: " + address);
-    cardSection.addWidget(MyWalletAddress);
 
     // allow for switching of available subdomain
     
