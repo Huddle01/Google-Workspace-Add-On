@@ -43,11 +43,29 @@ function loginCallback(e) {
 
   console.log("Address:", address);
 
-  const data = {
+  const data:any = {
     title: e.formInput.huddle01_form_title,
     roomLocked: true,
     hostWallets: [address.toLowerCase()],
   };
+  
+  const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+
+  if(!defaultSubdomainId){
+    const subdomainResponse = fetchSubdomains(address);
+    const subdomainId = subdomainResponse[0].id;
+    const subdomainName = subdomainResponse[0].name
+
+    if(subdomainId){
+      data.subdomainId =subdomainId;
+    service.getStorage().setValue("defaultSubdomainId", subdomainId);
+    service.getStorage().setValue("defaultSubdomainName", subdomainName);
+    }
+  }
+  else{
+      data.subdomainId =defaultSubdomainId;
+  }
+
   const huddleResponse = createHuddleMeetingWithApi(data);
   const result = JSON.parse(huddleResponse.response);
 

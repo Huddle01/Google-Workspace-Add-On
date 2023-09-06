@@ -122,14 +122,31 @@ function create3rdPartyConference(calendarEvent) {
   if (!address) {
     return { error: "AUTH" };
   }
-
-  const data = {
+  
+  const data:any = {
     title: "GCal Meeting",
     createdFrom: "OTHER",
     otherSource: "GCAL",
     hostWallets: [address.toLowerCase()],
     roomLocked: true,
   };
+
+  const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+
+  if(!defaultSubdomainId){
+    const subdomainResponse = fetchSubdomains(address);
+    const subdomainId = subdomainResponse[0].id;
+    const subdomainName = subdomainResponse[0].name
+
+    if(subdomainId){
+      data.subdomainId =subdomainId;
+    service.getStorage().setValue("defaultSubdomainId", subdomainId);
+    service.getStorage().setValue("defaultSubdomainName", subdomainName);
+    }
+  }
+  else{
+      data.subdomainId =defaultSubdomainId;
+  }
 
   const responseHuddle = createHuddleMeetingWithApi(data);
 
