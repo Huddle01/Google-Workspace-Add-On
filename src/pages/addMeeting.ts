@@ -17,7 +17,7 @@ const subdomainSwitchCallback = (e) => {
   service.getStorage().setValue("defaultSubdomainName", subdomainName);
   return CardService.newActionResponseBuilder()
     .setStateChanged(true)
-    .setNavigation(CardService.newNavigation().updateCard(createAddMeetingCard("New Meeting")))
+    .setNavigation(CardService.newNavigation().updateCard(createHome()))
     .build();
 
 };
@@ -44,6 +44,11 @@ const createAddMeetingCardSection = (subject: string) => {
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
 
+     const logoutButton = CardService.newTextButton()
+    .setText("Logout")
+    .setBackgroundColor("blue")
+    .setOnClickAction(CardService.newAction().setFunctionName("logout"));
+
 let defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
 if(!defaultSubdomainName){
   defaultSubdomainName = "app";
@@ -51,10 +56,7 @@ if(!defaultSubdomainName){
   const buttonSet = CardService.newButtonSet().addButton(button);
   const cardSection = CardService.newCardSection()
     .addWidget(MyWalletAddress)
-    .addWidget(startMeetingStrip(defaultSubdomainName))
-    .addWidget(textParagraph1)
-    .addWidget(textInput)
-    .addWidget(buttonSet)
+    
 
     // allow for switching of available subdomain
   
@@ -71,7 +73,13 @@ if(!defaultSubdomainName){
       service.getStorage().setValue("defaultSubdomainId", defaultSubdomainId);
       service.getStorage().setValue("defaultSubdomainName", defaultSubdomainName);
     }
-   const subdomainSwitch = CardService.newSelectionInput()
+
+    cardSection.addWidget(startMeetingStrip(defaultSubdomainName))
+    .addWidget(textParagraph1)
+    .addWidget(textInput)
+    .addWidget(buttonSet)
+   
+    const subdomainSwitch = CardService.newSelectionInput()
       .setType(CardService.SelectionInputType.DROPDOWN)
       .setTitle("Subdomain")
       .setFieldName("subdomainId")
@@ -89,7 +97,14 @@ if(!defaultSubdomainName){
     const subdomainTextParagraph = CardService.newTextParagraph().setText("<br><b>Select Default Subdomain for Meeting Creation</b><br>");
     cardSection.addWidget(subdomainTextParagraph);
     cardSection.addWidget(subdomainSwitch);
+  }else{
+    cardSection.addWidget(startMeetingStrip(defaultSubdomainName))
+    .addWidget(textParagraph1)
+    .addWidget(textInput)
+    .addWidget(buttonSet)
   }
+  cardSection.addWidget(logoutButton);
+  
 
   return cardSection;
 };

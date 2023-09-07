@@ -9,20 +9,12 @@ const createHome = () => {
     )
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
 
-  const LogoutButton = CardService.newTextButton()
-    .setText("Logout")
-    .setBackgroundColor("blue")
-    .setOnClickAction(CardService.newAction().setFunctionName("logout"));
+ 
 
   var cardSection = CardService.newCardSection();
 
   if (checkAuth()) {
     cardSection = createAddMeetingCardSection("New Meeting");
-    cardSection.addWidget(LogoutButton);
-
- 
-
-
   } else {
     cardSection.addWidget(welcomeImage).addWidget(LoginButton);
   }
