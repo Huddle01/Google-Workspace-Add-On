@@ -49,7 +49,7 @@ function handleSwitchChange() {
   lockRoom = !lockRoom;
 }
 
-const createHuddleMeetingWithApi = (data) => {
+const fetchSubdomains = (address:string) => {
   const GET_SUBDOMAIN_ID_LINK ="https://iriko.testing.huddle01.com/api/v1/admin/get-subdomain"
   const GET_SUBDOMAIN_ID_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
     method: "post",
@@ -57,7 +57,7 @@ const createHuddleMeetingWithApi = (data) => {
       "Content-Type": "application/json",
       "x-api-key": HUDDLE_API_KEY,
     },
-    payload: JSON.stringify({walletAddress:data.hostWallets[0]}) 
+    payload: JSON.stringify({walletAddress:address.toLowerCase()}) 
   };
 
   const subdomainResponse = UrlFetchApp.fetch(
@@ -67,9 +67,12 @@ const createHuddleMeetingWithApi = (data) => {
 
   const parsedSubdomainResponse = JSON.parse(subdomainResponse.getContentText())
   console.log({parsedSubdomainResponse})
-if(parsedSubdomainResponse.subdomain[0]){
-  data.subdomainId = parsedSubdomainResponse.subdomain[0].id
+  // add a subdomain with id app
+  return parsedSubdomainResponse.subdomain
 }
+
+const createHuddleMeetingWithApi = (data) => {
+ 
   const CREATE_NEW_ROOM_LINK =
   "https://iriko.testing.huddle01.com/api/v1/admin/create-meeting";
   
@@ -92,5 +95,5 @@ if(parsedSubdomainResponse.subdomain[0]){
     console.log(responseHuddle.getContentText())
     
 
-  return {response:responseHuddle.getContentText(),subdomain:subdomainResponse.getContentText()};
+  return {response:responseHuddle.getContentText()};
 };

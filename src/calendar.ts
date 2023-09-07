@@ -48,15 +48,27 @@ function createConference(arg) {
   if (!conferenceInfo.error) {
     // No error, so build the ConferenceData object from the
     // returned conference info.
-    var conferenceTypeParameter = ConferenceDataService.newConferenceParameter()
-      .setKey("conferenceSolutionType")
-      .setValue("jitsi");
+    ;
 
     dataBuilder
       .setConferenceId(conferenceInfo.id)
-      .addConferenceParameter(conferenceTypeParameter);
 
     if (conferenceInfo.videoUri) {
+      const meetingId = ConferenceDataService.newConferenceParameter()
+      .setKey("ID")
+      .setValue(conferenceInfo.videoUri)
+      dataBuilder.addConferenceParameter(meetingId);
+
+      const address = getService().getStorage().getValue("address");
+      
+      const meetingNotes = `------------------------------------<br>
+<b>Huddle01 Meeting Details</b><br>
+-----------------------------------<br><br>
+      Meeting Host : ${EMAIL} <br><br>
+      Host Wallet Address : ${address} <br><br>
+      Join Huddle01 Meeting : ${conferenceInfo.videoUri}`; 
+      dataBuilder.setNotes(meetingNotes);
+
       var videoEntryPoint = ConferenceDataService.newEntryPoint()
         .setEntryPointType(ConferenceDataService.EntryPointType.VIDEO)
         .setUri(conferenceInfo.videoUri);
@@ -122,14 +134,31 @@ function create3rdPartyConference(calendarEvent) {
   if (!address) {
     return { error: "AUTH" };
   }
-
-  const data = {
+  
+  const data:any = {
     title: "GCal Meeting",
     createdFrom: "OTHER",
     otherSource: "GCAL",
     hostWallets: [address.toLowerCase()],
     roomLocked: true,
   };
+
+  const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+
+  if(!defaultSubdomainId){
+    const subdomainResponse = fetchSubdomains(address);
+
+
+    const subdomainId = subdomainResponse[0]?.id;
+
+    if(subdomainId){
+      data.subdomainId =subdomainId;
+    service.getStorage().setValue("defaultSubdomainId", subdomainId);
+    }
+  }
+  else if(defaultSubdomainId!=="app"){
+      data.subdomainId =defaultSubdomainId;
+  }
 
   const responseHuddle = createHuddleMeetingWithApi(data);
 

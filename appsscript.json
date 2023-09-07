@@ -34,7 +34,7 @@
       "conferenceSolution": [
         {
           "id": 1,
-          "name": "Huddle01 for Google Workspace",
+          "name": "Huddle01 Meeting",
           "logoUrl": "https://lh3.googleusercontent.com/-HlLH08aKOjY/Y2HuOAnnwiI/AAAAAAAAANc/48QnIMbRzRMDXxjVwcAa8KhJZ-uRnpqqwCNcBGAsYHQ/s400/128_128.png",
           "onCreateFunction": "createConference"
         }

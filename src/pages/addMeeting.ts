@@ -1,6 +1,30 @@
 let lockRoom = false;
 
+const subdomainSwitchCallback = (e) => {
+  const service = getService();
+  const subdomainId = e.formInput.subdomainId;
+  const subdomainResponse = JSON.parse(e.parameters.subdomainResponse);
+  let subdomainName = subdomainResponse.find((subdomain) => subdomain.id === subdomainId)?.name;
+
+  if(subdomainId==="app"||!subdomainName){
+    service.getStorage().setValue("defaultSubdomainId", "app");
+    service.getStorage().setValue("defaultSubdomainName", "app");
+    subdomainName = "app";
+  }
+  console.log("subdomainId", subdomainId);
+  console.log("subdomainName", subdomainName);
+  service.getStorage().setValue("defaultSubdomainId", subdomainId);
+  service.getStorage().setValue("defaultSubdomainName", subdomainName);
+  return CardService.newActionResponseBuilder()
+    .setStateChanged(true)
+    .setNavigation(CardService.newNavigation().updateCard(createHome()))
+    .build();
+
+};
+
 const createAddMeetingCardSection = (subject: string) => {
+  const service = getService();
+
   const textParagraph1 =
     CardService.newTextParagraph().setText("<b>Meeting ID</b>");
 
@@ -10,6 +34,8 @@ const createAddMeetingCardSection = (subject: string) => {
     .setHint("*Room Name that can be changed*")
     .setValue(subject);
 
+  const address = service.getStorage().getValue("address");
+    const MyWalletAddress =CardService.newTextParagraph().setText("<b>My Wallet Address: </b> " + address);
   //Button
   const action = CardService.newAction().setFunctionName("loginCallback");
 
@@ -18,12 +44,67 @@ const createAddMeetingCardSection = (subject: string) => {
     .setOnClickAction(action)
     .setTextButtonStyle(CardService.TextButtonStyle.FILLED);
 
+     const logoutButton = CardService.newTextButton()
+    .setText("Logout")
+    .setBackgroundColor("blue")
+    .setOnClickAction(CardService.newAction().setFunctionName("logout"));
+
+let defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
+if(!defaultSubdomainName){
+  defaultSubdomainName = "app";
+}
   const buttonSet = CardService.newButtonSet().addButton(button);
   const cardSection = CardService.newCardSection()
-    .addWidget(startMeetingStrip)
+    .addWidget(MyWalletAddress)
+    
+
+    // allow for switching of available subdomain
+  
+    const subdomainResponse = fetchSubdomains(address);
+    if(subdomainResponse.length>0){
+    // subdomainResponse  = {id:string,name:string}[]
+    let defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+    console.log("subdomainResponse exists", subdomainResponse)
+    console.log("defaultSubdomainId", defaultSubdomainId);
+    
+    if(!defaultSubdomainId){
+      const defaultSubdomainId = subdomainResponse[0].id;
+      const defaultSubdomainName = subdomainResponse[0].name;
+      service.getStorage().setValue("defaultSubdomainId", defaultSubdomainId);
+      service.getStorage().setValue("defaultSubdomainName", defaultSubdomainName);
+    }
+
+    cardSection.addWidget(startMeetingStrip(defaultSubdomainName))
     .addWidget(textParagraph1)
     .addWidget(textInput)
-    .addWidget(buttonSet);
+    .addWidget(buttonSet)
+   
+    const subdomainSwitch = CardService.newSelectionInput()
+      .setType(CardService.SelectionInputType.DROPDOWN)
+      .setTitle("Subdomain")
+      .setFieldName("subdomainId")
+    
+      subdomainResponse.push({id:"app",name:"app"});
+      subdomainResponse.forEach((subdomain) => {
+      if(subdomain.id!=defaultSubdomainId){
+        subdomainSwitch.addItem(subdomain.name, subdomain.id, false);
+      }
+      else{
+        subdomainSwitch.addItem(subdomain.name, subdomain.id, true);
+      }
+    });
+    subdomainSwitch.setOnChangeAction(CardService.newAction().setFunctionName("subdomainSwitchCallback").setParameters({subdomainResponse: JSON.stringify(subdomainResponse)}));
+    const subdomainTextParagraph = CardService.newTextParagraph().setText("<br><b>Select Default Subdomain for Meeting Creation</b><br>");
+    cardSection.addWidget(subdomainTextParagraph);
+    cardSection.addWidget(subdomainSwitch);
+  }else{
+    cardSection.addWidget(startMeetingStrip(defaultSubdomainName))
+    .addWidget(textParagraph1)
+    .addWidget(textInput)
+    .addWidget(buttonSet)
+  }
+  cardSection.addWidget(logoutButton);
+  
 
   return cardSection;
 };
@@ -43,11 +124,27 @@ function loginCallback(e) {
 
   console.log("Address:", address);
 
-  const data = {
+  const data:any = {
     title: e.formInput.huddle01_form_title,
     roomLocked: true,
     hostWallets: [address.toLowerCase()],
   };
+  
+  const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+
+  if(!defaultSubdomainId){
+    const subdomainResponse = fetchSubdomains(address);
+    const subdomainId = subdomainResponse[0]?.id;
+
+    if(subdomainId){
+      data.subdomainId =subdomainId;
+    service.getStorage().setValue("defaultSubdomainId", subdomainId);
+    }
+  }
+  else if(defaultSubdomainId!=="app"){
+      data.subdomainId =defaultSubdomainId;
+  }
+
   const huddleResponse = createHuddleMeetingWithApi(data);
   const result = JSON.parse(huddleResponse.response);
 
