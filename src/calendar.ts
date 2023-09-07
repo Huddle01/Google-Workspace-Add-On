@@ -150,15 +150,13 @@ function create3rdPartyConference(calendarEvent) {
 
 
     const subdomainId = subdomainResponse[0]?.id;
-    const subdomainName = subdomainResponse[0]?.name
 
     if(subdomainId){
       data.subdomainId =subdomainId;
     service.getStorage().setValue("defaultSubdomainId", subdomainId);
-    service.getStorage().setValue("defaultSubdomainName", subdomainName);
     }
   }
-  else{
+  else if(defaultSubdomainId!=="app"){
       data.subdomainId =defaultSubdomainId;
   }
 
