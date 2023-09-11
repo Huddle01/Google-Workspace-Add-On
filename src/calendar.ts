@@ -144,6 +144,8 @@ function create3rdPartyConference(calendarEvent) {
   };
 
   const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+  const defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
+
 
   if(!defaultSubdomainId){
     const subdomainResponse = fetchSubdomains(address);
@@ -155,6 +157,9 @@ function create3rdPartyConference(calendarEvent) {
       data.subdomainId =subdomainId;
     service.getStorage().setValue("defaultSubdomainId", subdomainId);
     }
+  }else if (defaultSubdomainName.length===32){
+    service.getStorage().setValue("defaultSubdomainId", null);
+    service.getStorage().setValue("defaultSubdomainName", null);
   }
   else if(defaultSubdomainId!=="app"){
       data.subdomainId =defaultSubdomainId;

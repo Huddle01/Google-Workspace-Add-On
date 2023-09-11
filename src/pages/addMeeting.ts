@@ -50,6 +50,13 @@ const createAddMeetingCardSection = (subject: string) => {
     .setOnClickAction(CardService.newAction().setFunctionName("logout"));
 
 let defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
+
+// to tackle issue with db
+if(defaultSubdomainName.length===32){
+  service.getStorage().setValue("defaultSubdomainName",null);
+  defaultSubdomainName = "app";
+}
+
 if(!defaultSubdomainName){
   defaultSubdomainName = "app";
 }
@@ -86,6 +93,11 @@ if(!defaultSubdomainName){
     
       subdomainResponse.push({id:"app",name:"app"});
       subdomainResponse.forEach((subdomain) => {
+      if(subdomain.name.length===32){
+        // to tackle issue with db where it returns subdomain for sdk purpose
+        // ignore this entry 
+        return;
+      }  
       if(subdomain.id!=defaultSubdomainId){
         subdomainSwitch.addItem(subdomain.name, subdomain.id, false);
       }
@@ -131,6 +143,7 @@ function loginCallback(e) {
   };
   
   const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
+  const defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
 
   if(!defaultSubdomainId){
     const subdomainResponse = fetchSubdomains(address);
@@ -140,6 +153,10 @@ function loginCallback(e) {
       data.subdomainId =subdomainId;
     service.getStorage().setValue("defaultSubdomainId", subdomainId);
     }
+  }
+  else if (defaultSubdomainName.length===32){
+    service.getStorage().setValue("defaultSubdomainId", null);
+    service.getStorage().setValue("defaultSubdomainName", null);
   }
   else if(defaultSubdomainId!=="app"){
       data.subdomainId =defaultSubdomainId;
