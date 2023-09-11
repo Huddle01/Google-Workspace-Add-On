@@ -52,7 +52,7 @@ const createAddMeetingCardSection = (subject: string) => {
 let defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
 
 // to tackle issue with db
-if(defaultSubdomainName.length===32){
+if(defaultSubdomainName?.length===32){
   service.getStorage().setValue("defaultSubdomainName",null);
   defaultSubdomainName = "app";
 }
@@ -93,7 +93,7 @@ if(!defaultSubdomainName){
     
       subdomainResponse.push({id:"app",name:"app"});
       subdomainResponse.forEach((subdomain) => {
-      if(subdomain.name.length===32){
+      if(subdomain.name?.length===32){
         // to tackle issue with db where it returns subdomain for sdk purpose
         // ignore this entry 
         return;
@@ -154,7 +154,7 @@ function loginCallback(e) {
     service.getStorage().setValue("defaultSubdomainId", subdomainId);
     }
   }
-  else if (defaultSubdomainName.length===32){
+  else if (defaultSubdomainName?.length===32){
     service.getStorage().setValue("defaultSubdomainId", null);
     service.getStorage().setValue("defaultSubdomainName", null);
   }

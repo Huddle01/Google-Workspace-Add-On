@@ -157,7 +157,7 @@ function create3rdPartyConference(calendarEvent) {
       data.subdomainId =subdomainId;
     service.getStorage().setValue("defaultSubdomainId", subdomainId);
     }
-  }else if (defaultSubdomainName.length===32){
+  }else if (defaultSubdomainName?.length===32){
     service.getStorage().setValue("defaultSubdomainId", null);
     service.getStorage().setValue("defaultSubdomainName", null);
   }
