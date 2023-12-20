@@ -61,12 +61,16 @@ function createConference(arg) {
 
       const address = getService().getStorage().getValue("address");
       
-      const meetingNotes = `------------------------------------<br>
+      const meetingNotes = `
+     <font color="#767676">
+      ------------------------------------<br>
 <b>Huddle01 Meeting Details</b><br>
 -----------------------------------<br><br>
-      Meeting Host : ${EMAIL} <br><br>
-      Host Wallet Address : ${address} <br><br>
-      Join Huddle01 Meeting : ${conferenceInfo.videoUri}`; 
+      <strong> Meeting Host : ${EMAIL} </strong><br><br>
+     <strong> Host Wallet Address : ${address} </strong><br><br>
+      <strong> Join Huddle01 Meeting : ${conferenceInfo.videoUri}</strong>
+         </font>
+      `; 
       dataBuilder.setNotes(meetingNotes);
 
       var videoEntryPoint = ConferenceDataService.newEntryPoint()
