@@ -420,10 +420,13 @@ class Service_ {
    * @return {boolean} True if authorization was granted, false if it was denied.
    */
   handleCallback = function (callbackRequest) {
-    console.log('in handleCallback')
-    var code = callbackRequest.parameter.code;
+    console.log("in handleCallback");
+    var accessToken = callbackRequest.parameters.accessToken;
+    const refreshToken = callbackRequest.parameters.refreshToken;
+
     var error = callbackRequest.parameter.error;
-console.log({code, error})
+    console.log({ accessToken, refreshToken, error });
+
     if (error) {
       if (error == "access_denied") {
         return false;
@@ -435,22 +438,11 @@ console.log({code, error})
       "Client ID": this.clientId_,
       "Token URL": this.tokenUrl_,
     });
-    var payload = {
-      code: code,
-      client_id: this.clientId_,
-      client_secret: this.clientSecret_,
-      redirect_uri: this.getRedirectUri(),
-      grant_type: "authorization_code",
-    };
-    console.log({payload})
-    if (callbackRequest.parameter.codeVerifier_) {
-      payload["code_verifier"] = callbackRequest.parameter.codeVerifier_;
-    }
-    var token = this.fetchToken_(payload);
-    console.log("handleCallbackToken", {token});
-
-    this.saveToken_(token);
-    console.log('handleCallback done')
+    this.saveToken_({
+      refresh_token: refreshToken[0],
+      access_token: accessToken[0],
+    });
+    console.log("handleCallback done");
     return true;
   };
 
@@ -550,7 +542,7 @@ console.log({code, error})
    */
   fetchToken_ = function (payload, optUrl) {
     // Use the configured token URL unless one is specified.
-    console.log('in fetch token')
+    console.log("in fetch token");
     var url = optUrl || this.tokenUrl_;
     var headers = {
       Accept: this.tokenFormat_,
@@ -562,7 +554,7 @@ console.log({code, error})
       payload = this.tokenPayloadHandler_(payload);
     }
 
-    console.log({payload,url,headers,tokenMethod_: this.tokenMethod_})
+    console.log({ payload, url, headers, tokenMethod_: this.tokenMethod_ });
 
     var response = UrlFetchApp.fetch(url, {
       method: this.tokenMethod_,
@@ -571,8 +563,8 @@ console.log({code, error})
       payload: JSON.stringify(payload),
       muteHttpExceptions: true,
     });
-    console.log({responseStr: response.getContentText()})
-    console.log('fetch token_ done')
+    console.log({ responseStr: response.getContentText() });
+    console.log("fetch token_ done");
     return this.getTokenFromResponse_(response);
   };
 
@@ -584,14 +576,14 @@ console.log({code, error})
    * @private
    */
   getTokenFromResponse_ = function (response) {
-    console.log('getTokenFromResponse')
-var respContentText = response.getContentText();
-    console.log({respContentText})
+    console.log("getTokenFromResponse");
+    var respContentText = response.getContentText();
+    console.log({ respContentText });
     var token = this.parseToken_(response.getContentText());
-    console.log({token});
+    console.log({ token });
 
     var resCode = response.getResponseCode();
-    console.log({ resCode })
+    console.log({ resCode });
     if (resCode < 200 || resCode >= 300 || token.error) {
       var reason = [
         token.error,
@@ -620,28 +612,28 @@ var respContentText = response.getContentText();
    */
   parseToken_ = function (content) {
     var token;
-    console.log('in parsetoken_')
-    console.log({tokenfmt:this.tokenFormat_})
+    console.log("in parsetoken_");
+    console.log({ tokenfmt: this.tokenFormat_ });
     if (this.tokenFormat_ == TOKEN_FORMAT.JSON) {
-      console.log('in json')
+      console.log("in json");
       try {
         token = JSON.parse(content);
       } catch (e) {
         throw new Error("Token response not valid JSON: " + e);
       }
     } else if (this.tokenFormat_ == TOKEN_FORMAT.FORM_URL_ENCODED) {
-      console.log('in url encoded')
+      console.log("in url encoded");
       token = content.split("&").reduce(function (result, pair) {
         var parts = pair.split("=");
         result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
         return result;
       }, {});
     } else {
-      console.log('unknown fmt')
+      console.log("unknown fmt");
       throw new Error("Unknown token format: " + this.tokenFormat_);
     }
     this.ensureExpiresAtSet_(token);
-    console.log('parsetoken_ done')
+    console.log("parsetoken_ done");
     return token;
   };
 
