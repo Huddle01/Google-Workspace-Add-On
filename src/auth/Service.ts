@@ -422,7 +422,7 @@ class Service_ {
   handleCallback = function (callbackRequest) {
     console.log("in handleCallback");
     var accessToken = callbackRequest.parameters.accessToken;
-    const refreshToken = callbackRequest.parameters.refreshToken;
+    var refreshToken = callbackRequest.parameters.refreshToken;
 
     var error = callbackRequest.parameter.error;
     console.log({ accessToken, refreshToken, error });

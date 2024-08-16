@@ -4,7 +4,7 @@ const subdomainSwitchCallback = (e) => {
   const service = getService();
   const subdomainId = e.formInput.subdomainId;
   const subdomainResponse = JSON.parse(e.parameters.subdomainResponse);
-  let subdomainName = subdomainResponse.find(
+  let subdomainName = subdomainResponse.subdomains.find(
     (subdomain) => subdomain.id === subdomainId
   )?.name;
 
@@ -39,7 +39,7 @@ const createAddMeetingCardSection = (subject: string) => {
   const MyWalletAddress = CardService.newTextParagraph().setText(
     "<b>My Wallet Address: </b> " + address
   );
-  //Button
+
   const action = CardService.newAction().setFunctionName("loginCallback");
 
   const button = CardService.newTextButton()
@@ -49,30 +49,22 @@ const createAddMeetingCardSection = (subject: string) => {
 
   const logoutButton = CardService.newTextButton()
     .setText("Logout")
-    // .setBackgroundColor("blue")
     .setOnClickAction(CardService.newAction().setFunctionName("logout"));
 
   let defaultSubdomainName = service
     .getStorage()
     .getValue("defaultSubdomainName");
 
-  // to tackle issue with db
-  if (defaultSubdomainName?.length === 32) {
-    service.getStorage().setValue("defaultSubdomainName", null);
+  if (defaultSubdomainName?.length === 32 || !defaultSubdomainName) {
+    service.getStorage().setValue("defaultSubdomainName", "app");
     defaultSubdomainName = "app";
   }
 
-  if (!defaultSubdomainName) {
-    defaultSubdomainName = "app";
-  }
   const buttonSet = CardService.newButtonSet().addButton(button);
   const cardSection = CardService.newCardSection().addWidget(MyWalletAddress);
 
-  // allow for switching of available subdomain
-
-  const subdomainResponse = fetchSubdomains(address);
-  if (subdomainResponse.length > 0) {
-    // subdomainResponse  = {id:string,name:string}[]
+  const subdomainResponse = fetchSubdomains();
+  if (subdomainResponse.subdomains && subdomainResponse.subdomains.length > 0) {
     let defaultSubdomainId = service
       .getStorage()
       .getValue("defaultSubdomainId");
@@ -80,8 +72,8 @@ const createAddMeetingCardSection = (subject: string) => {
     console.log("defaultSubdomainId", defaultSubdomainId);
 
     if (!defaultSubdomainId) {
-      const defaultSubdomainId = subdomainResponse[0].id;
-      const defaultSubdomainName = subdomainResponse[0].name;
+      defaultSubdomainId = subdomainResponse.subdomains[0].id;
+      defaultSubdomainName = subdomainResponse.subdomains[0].name;
       service.getStorage().setValue("defaultSubdomainId", defaultSubdomainId);
       service
         .getStorage()
@@ -99,17 +91,14 @@ const createAddMeetingCardSection = (subject: string) => {
       .setTitle("Subdomain")
       .setFieldName("subdomainId");
 
-    subdomainResponse.push({ id: "app", name: "app" });
-    subdomainResponse.forEach((subdomain) => {
-      if (subdomain.name?.length === 32) {
-        // to tackle issue with db where it returns subdomain for sdk purpose
-        // ignore this entry
-        return;
-      }
-      if (subdomain.id != defaultSubdomainId) {
-        subdomainSwitch.addItem(subdomain.name, subdomain.id, false);
-      } else {
-        subdomainSwitch.addItem(subdomain.name, subdomain.id, true);
+    subdomainResponse.subdomains.push({ id: "app", name: "app", value: "app" });
+    subdomainResponse.subdomains.forEach((subdomain) => {
+      if (subdomain.name?.length !== 32) {
+        subdomainSwitch.addItem(
+          subdomain.name,
+          subdomain.id,
+          subdomain.id === defaultSubdomainId
+        );
       }
     });
     subdomainSwitch.setOnChangeAction(
@@ -136,17 +125,12 @@ const createAddMeetingCardSection = (subject: string) => {
 
 const createAddMeetingCard = (subject: string) => {
   const cardSection = createAddMeetingCardSection(subject);
-
-  const card = CardService.newCardBuilder().addSection(cardSection);
-
-  return card.build();
+  return CardService.newCardBuilder().addSection(cardSection).build();
 };
 
 function loginCallback(e) {
   const service = getService();
-
   const address = service.getStorage().getValue("address");
-
   console.log("Address:", address);
 
   const data: any = {
@@ -163,8 +147,8 @@ function loginCallback(e) {
     .getValue("defaultSubdomainName");
 
   if (!defaultSubdomainId) {
-    const subdomainResponse = fetchSubdomains(address);
-    const subdomainId = subdomainResponse[0]?.id;
+    const subdomainResponse = fetchDomainNames();
+    const subdomainId = subdomainResponse.subdomains[0]?.id;
 
     if (subdomainId) {
       data.subdomainId = subdomainId;

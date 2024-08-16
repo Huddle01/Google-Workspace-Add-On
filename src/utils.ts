@@ -49,51 +49,49 @@ function handleSwitchChange() {
   lockRoom = !lockRoom;
 }
 
-const fetchSubdomains = (address: string) => {
-  const GET_SUBDOMAIN_ID_LINK = "https://api.huddle01.com/api/v1/admin/get-subdomain"
-  const GET_SUBDOMAIN_ID_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": HUDDLE_API_KEY,
-    },
-    payload: JSON.stringify({ walletAddress: address.toLowerCase() })
-  };
+const createHuddleMeetingWithApi = (data: {
+  title?: string;
+  subdomain?: string;
+}) => {
+  const { access_token, refresh_token } = this.getToken(false);
 
-  const subdomainResponse = UrlFetchApp.fetch(
-    GET_SUBDOMAIN_ID_LINK,
-    GET_SUBDOMAIN_ID_OPTIONS
-  )
-
-  const parsedSubdomainResponse = JSON.parse(subdomainResponse.getContentText())
-  console.log({ parsedSubdomainResponse })
-  // add a subdomain with id app
-  return parsedSubdomainResponse.subdomain
-}
-
-const createHuddleMeetingWithApi = (data) => {
-
+  // Todo: add API_BASE_URL in secrets.ts
   const CREATE_NEW_ROOM_LINK =
     "https://api.huddle01.com/api/v1/admin/create-meeting";
 
-  const CREATE_NEW_ROOM_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions =
-  {
+  const responseHuddle = UrlFetchApp.fetch(CREATE_NEW_ROOM_LINK, {
     method: "post",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": HUDDLE_API_KEY,
+      "Access-Token": access_token,
+      "Refresh-Token": refresh_token,
     },
     payload: JSON.stringify({ ...data }),
+  });
+
+  const response = JSON.parse(responseHuddle.getContentText()) as {
+    roomId: string;
+    meetingLink: string;
   };
 
+  return { response };
+};
 
+const fetchDomainNames = function () {
+  const { access_token, refresh_token } = this.getToken(false);
+  // Todo: add API_BASE_URL in secrets.ts
+  const response = UrlFetchApp.fetch(`${API_BASE_URL}/gcal/subdomains`, {
+    method: "get",
+    contentType: "application/json",
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Token": access_token,
+      "Refresh-Token": refresh_token,
+    },
+    muteHttpExceptions: true,
+  });
 
-  const responseHuddle = UrlFetchApp.fetch(
-    CREATE_NEW_ROOM_LINK,
-    CREATE_NEW_ROOM_OPTIONS
-  );
-  console.log(responseHuddle.getContentText())
-
-
-  return { response: responseHuddle.getContentText() };
+  console.log("GET CONTENT", response.getContentText(), response);
+  const data = JSON.parse(response.getContentText());
+  return { response: data };
 };
