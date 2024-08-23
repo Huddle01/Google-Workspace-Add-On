@@ -421,11 +421,10 @@ class Service_ {
    */
   handleCallback = function (callbackRequest) {
     console.log("in handleCallback");
-    var accessToken = callbackRequest.parameters.accessToken;
-    var refreshToken = callbackRequest.parameters.refreshToken;
+    var identityToken = callbackRequest.parameters.identityToken;
 
     var error = callbackRequest.parameter.error;
-    console.log({ accessToken, refreshToken, error });
+    console.log({ identityToken, error });
 
     if (error) {
       if (error == "access_denied") {
@@ -439,8 +438,7 @@ class Service_ {
       "Token URL": this.tokenUrl_,
     });
     this.saveToken_({
-      refresh_token: refreshToken[0],
-      access_token: accessToken[0],
+      identityToken: identityToken[0],
     });
     console.log("handleCallback done");
     return true;
@@ -499,7 +497,7 @@ class Service_ {
       throw new Error("Access not granted or expired.");
     }
     var token = this.getToken();
-    return token.access_token;
+    return token.identityToken;
   };
 
   /**
