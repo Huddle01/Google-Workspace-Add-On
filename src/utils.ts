@@ -53,18 +53,19 @@ const createHuddleMeetingWithApi = (data: {
   title?: string;
   subdomain?: string;
 }) => {
-  const { access_token, refresh_token } = this.getToken(false);
+  const service = getService();
+  const { identityToken } = service.getToken(false);
 
-  // Todo: add API_BASE_URL in secrets.ts
-  const CREATE_NEW_ROOM_LINK =
-    "https://api.huddle01.com/api/v1/admin/create-meeting";
+  console.log("subdomain fetching identityToken ~>", identityToken);
+
+  const CREATE_NEW_ROOM_LINK = `${API_ENDPOINT_URL}/createMeeting`;
 
   const responseHuddle = UrlFetchApp.fetch(CREATE_NEW_ROOM_LINK, {
     method: "post",
     headers: {
       "Content-Type": "application/json",
-      "Access-Token": access_token,
-      "Refresh-Token": refresh_token,
+      "x-api-key": HUDDLE_THIRD_PARTY_API_KEY,
+      "x-identity-token": identityToken,
     },
     payload: JSON.stringify({ ...data }),
   });
@@ -77,16 +78,19 @@ const createHuddleMeetingWithApi = (data: {
   return { response };
 };
 
-const fetchDomainNames = function () {
-  const { access_token, refresh_token } = this.getToken(false);
-  // Todo: add API_BASE_URL in secrets.ts
-  const response = UrlFetchApp.fetch(`${API_BASE_URL}/gcal/subdomains`, {
+const fetchSubdomains = function () {
+  const service = getService();
+  const { identityToken } = service.getToken(false);
+
+  const GET_SUBDOMAIN_LIST = `${API_ENDPOINT_URL}/subdomains`;
+
+  const response = UrlFetchApp.fetch(GET_SUBDOMAIN_LIST, {
     method: "get",
     contentType: "application/json",
     headers: {
       "Content-Type": "application/json",
-      "Access-Token": access_token,
-      "Refresh-Token": refresh_token,
+      "x-api-key": HUDDLE_THIRD_PARTY_API_KEY,
+      "x-identity-token": identityToken,
     },
     muteHttpExceptions: true,
   });
