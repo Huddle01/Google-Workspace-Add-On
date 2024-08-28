@@ -97,7 +97,19 @@ const fetchSubdomains = function () {
     muteHttpExceptions: true,
   });
 
-  console.log("GET CONTENT", response.getContentText(), response);
-  const data = JSON.parse(response.getContentText());
-  return { response: data };
+  const data = JSON.parse(response.getContentText()) as {
+    subdomains: {
+      id: string;
+      url: string;
+      name: string;
+      createdAt: string;
+      updatedAt: string;
+      apiKey: string;
+      projectId: string;
+      status: string;
+      platformHubId: string;
+    }[];
+    ok: true;
+  };
+  return data;
 };
