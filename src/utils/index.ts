@@ -7,7 +7,7 @@ const checkAuth = () => {
 const getService = () => {
   return createService("Wallet01Login")
     .setAuthorizationBaseUrl(AUTH_BASE_URL)
-    .setTokenUrl(TOKEN_URL)
+    .setTokenUrl(API_ENDPOINT_URL)
     .setClientId(CLIENT_ID)
     .setClientSecret(CLIENT_SECRET)
     .setCallbackFunction("authCallback")

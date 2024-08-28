@@ -453,37 +453,8 @@ class Service_ {
    */
   hasAccess = function () {
     var token = this.getToken();
-    if (token && !this.isExpired_(token)) return true; // Token still has access.
-    var canGetToken =
-      (token && this.canRefresh_(token)) || this.privateKey_ || this.grantType_;
-    if (!canGetToken) return false;
-
-    return this.lockable_(function () {
-      // Get the token again, bypassing the local memory cache.
-      token = this.getToken(true);
-      // Check to see if the token is no longer missing or expired, as another
-      // execution may have refreshed it while we were waiting for the lock.
-      if (token && !this.isExpired_(token)) return true; // Token now has access.
-      try {
-        if (token && this.canRefresh_(token)) {
-          this.refresh();
-          return true;
-        } else if (this.privateKey_) {
-          this.exchangeJwt_();
-          return true;
-        } else if (this.grantType_) {
-          this.exchangeGrant_();
-          return true;
-        } else {
-          // This should never happen, since canGetToken should have been false
-          // earlier.
-          return false;
-        }
-      } catch (e) {
-        this.lastError_ = e;
-        return false;
-      }
-    });
+    if (token) return true;
+    return false;
   };
 
   /**
@@ -530,40 +501,6 @@ class Service_ {
    */
   getLastError = function () {
     return this.lastError_;
-  };
-
-  /**
-   * Fetches a new token from the OAuth server.
-   * @param {Object} payload The token request payload.
-   * @param {string} [optUrl] The URL of the token endpoint.
-   * @return {Object} The parsed token.
-   */
-  fetchToken_ = function (payload, optUrl) {
-    // Use the configured token URL unless one is specified.
-    console.log("in fetch token");
-    var url = optUrl || this.tokenUrl_;
-    var headers = {
-      Accept: this.tokenFormat_,
-    };
-    if (this.tokenHeaders_) {
-      headers = extend_(headers, this.tokenHeaders_);
-    }
-    if (this.tokenPayloadHandler_) {
-      payload = this.tokenPayloadHandler_(payload);
-    }
-
-    console.log({ payload, url, headers, tokenMethod_: this.tokenMethod_ });
-
-    var response = UrlFetchApp.fetch(url, {
-      method: this.tokenMethod_,
-      contentType: "application/json",
-      headers: headers,
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true,
-    });
-    console.log({ responseStr: response.getContentText() });
-    console.log("fetch token_ done");
-    return this.getTokenFromResponse_(response);
   };
 
   /**
@@ -860,40 +797,5 @@ class Service_ {
       this.lock_.releaseLock();
     }
     return result;
-  };
-
-  /**
-   * Obtain an access token using the custom grant type specified. Most often
-   * this will be "client_credentials", and a client ID and secret are set an
-   * "Authorization: Basic ..." header will be added using those values.
-   */
-  exchangeGrant_ = function () {
-    validate_({
-      "Grant Type": this.grantType_,
-      "Token URL": this.tokenUrl_,
-    });
-    var payload = {
-      grant_type: this.grantType_,
-    };
-    payload = extend_(payload, this.params_);
-
-    // For the client_credentials grant type, add a basic authorization header:
-    // - If the client ID and client secret are set.
-    // - No authorization header has been set yet.
-    var lowerCaseHeaders = toLowerCaseKeys_(this.tokenHeaders_);
-    if (
-      this.grantType_ === "client_credentials" &&
-      this.clientId_ &&
-      this.clientSecret_ &&
-      (!lowerCaseHeaders || !lowerCaseHeaders.authorization)
-    ) {
-      this.tokenHeaders_ = this.tokenHeaders_ || {};
-      this.tokenHeaders_.authorization =
-        "Basic " +
-        Utilities.base64Encode(this.clientId_ + ":" + this.clientSecret_);
-    }
-
-    var token = this.fetchToken_(payload);
-    this.saveToken_(token);
   };
 }

@@ -36,8 +36,14 @@ const createAddMeetingCardSection = (subject: string) => {
     .setValue(subject);
 
   const address = service.getStorage().getValue("address");
+  const email = service.getStorage().getValue("email");
+
   const MyWalletAddress = CardService.newTextParagraph().setText(
     "<b>My Wallet Address: </b> " + address
+  );
+
+  const MyEmailAddress = CardService.newTextParagraph().setText(
+    "<b>My Huddle01 Email Address: </b> " + email
   );
 
   const action = CardService.newAction().setFunctionName("loginCallback");
@@ -61,8 +67,11 @@ const createAddMeetingCardSection = (subject: string) => {
   }
 
   const buttonSet = CardService.newButtonSet().addButton(button);
-  const cardSection = CardService.newCardSection().addWidget(MyWalletAddress);
+  const cardSection = CardService.newCardSection().addWidget(
+    address ? MyWalletAddress : MyEmailAddress
+  );
 
+  // Todo: refactor this
   const subdomainResponse = fetchSubdomains();
   if (subdomainResponse.subdomains && subdomainResponse.subdomains.length > 0) {
     let defaultSubdomainId = service
@@ -131,15 +140,18 @@ const createAddMeetingCard = (subject: string) => {
 function loginCallback(e) {
   const service = getService();
   const address = service.getStorage().getValue("address");
+  const email = service.getStorage().getValue("email");
+
   console.log("Address:", address);
+  console.log("Email:", email);
 
   const data: any = {
     title: e.formInput.huddle01_form_title,
-    roomLocked: true,
-    hostWallets: [address.toLowerCase()],
+    // roomLocked: true,
+    //  hostWallets: [address.toLowerCase()],
   };
 
-  const defaultSubdomainId = service
+  /* const defaultSubdomainId = service
     .getStorage()
     .getValue("defaultSubdomainId");
   const defaultSubdomainName = service
@@ -159,22 +171,19 @@ function loginCallback(e) {
     service.getStorage().setValue("defaultSubdomainName", null);
   } else if (defaultSubdomainId !== "app") {
     data.subdomainId = defaultSubdomainId;
-  }
+  } */
 
-  const huddleResponse = createHuddleMeetingWithApi(data);
-  const result = JSON.parse(huddleResponse.response);
+  const { response } = createHuddleMeetingWithApi(data);
 
   const button = CardService.newTextButton()
     .setText("Join Meeting")
-    .setOpenLink(CardService.newOpenLink().setUrl(result.data.meetingLink));
+    .setOpenLink(CardService.newOpenLink().setUrl(response.meetingLink));
 
   return CardService.newCardBuilder()
     .setHeader(CardService.newCardHeader().setTitle("Meeting Created"))
     .addSection(
       CardService.newCardSection()
-        .addWidget(
-          CardService.newKeyValue().setContent(result.data.meetingLink)
-        )
+        .addWidget(CardService.newKeyValue().setContent(response.meetingLink))
         .addWidget(button)
     )
     .build();

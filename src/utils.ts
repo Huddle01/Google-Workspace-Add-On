@@ -75,6 +75,8 @@ const createHuddleMeetingWithApi = (data: {
     meetingLink: string;
   };
 
+  console.log("CREATE MEETING RESPONSE", response);
+
   return { response };
 };
 
