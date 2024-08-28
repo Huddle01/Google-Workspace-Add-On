@@ -147,11 +147,9 @@ function loginCallback(e) {
 
   const data: any = {
     title: e.formInput.huddle01_form_title,
-    // roomLocked: true,
-    //  hostWallets: [address.toLowerCase()],
   };
 
-  /* const defaultSubdomainId = service
+  const defaultSubdomainId = service
     .getStorage()
     .getValue("defaultSubdomainId");
   const defaultSubdomainName = service
@@ -159,19 +157,19 @@ function loginCallback(e) {
     .getValue("defaultSubdomainName");
 
   if (!defaultSubdomainId) {
-    const subdomainResponse = fetchDomainNames();
-    const subdomainId = subdomainResponse.subdomains[0]?.id;
+    const subdomainResponse = fetchSubdomains();
+    const subdomain = subdomainResponse.subdomains[0]?.name;
 
-    if (subdomainId) {
-      data.subdomainId = subdomainId;
-      service.getStorage().setValue("defaultSubdomainId", subdomainId);
+    if (subdomain) {
+      data.subdomain = subdomain;
+      service.getStorage().setValue("defaultSubdomainId", subdomain);
     }
   } else if (defaultSubdomainName?.length === 32) {
     service.getStorage().setValue("defaultSubdomainId", null);
     service.getStorage().setValue("defaultSubdomainName", null);
   } else if (defaultSubdomainId !== "app") {
-    data.subdomainId = defaultSubdomainId;
-  } */
+    data.subdomain = defaultSubdomainId;
+  }
 
   const { response } = createHuddleMeetingWithApi(data);
 
