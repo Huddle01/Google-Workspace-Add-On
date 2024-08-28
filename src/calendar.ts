@@ -59,6 +59,10 @@ function createConference(arg) {
       dataBuilder.addConferenceParameter(meetingId);
 
       const address = getService().getStorage().getValue("address");
+      const email = getService().getStorage().getValue("email");
+
+      const addressString = `<strong> Host Wallet Address : ${address} </strong><br><br>`;
+      const emailString = `<strong> Host Email Address : ${email} </strong><br><br>`;
 
       const meetingNotes = `
      <font color="#767676">
@@ -66,7 +70,8 @@ function createConference(arg) {
 <b>Huddle01 Meeting Details</b><br>
 -----------------------------------<br><br>
       <strong> Meeting Host : ${EMAIL} </strong><br><br>
-     <strong> Host Wallet Address : ${address} </strong><br><br>
+      ${address ? addressString : ""}
+      ${email ? emailString : ""}
       <strong> Join Huddle01 Meeting : ${conferenceInfo.videoUri}</strong>
          </font>
       `;
