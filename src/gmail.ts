@@ -47,5 +47,5 @@ const onGmailMessageOpen = (e) => {
 };
 
 const onGmailCompose = () => {
-  return createCard("onGmailCompose");
+  return createHome();
 };
