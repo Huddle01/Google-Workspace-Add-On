@@ -2,21 +2,20 @@ let lockRoom = false;
 
 const subdomainSwitchCallback = (e) => {
   const service = getService();
-  const subdomainId = e.formInput.subdomainId;
+  const subdomain = e.formInput.subdomain;
   const subdomainResponse = JSON.parse(e.parameters.subdomainResponse);
-  let subdomainName = subdomainResponse.subdomains.find(
-    (subdomain) => subdomain.id === subdomainId
+  const subdomainName = subdomainResponse.subdomains.find(
+    (s) => s.name === subdomain
   )?.name;
 
-  if (subdomainId === "app" || !subdomainName) {
-    service.getStorage().setValue("defaultSubdomainId", "app");
+  if (subdomain === "app" || !subdomainName) {
     service.getStorage().setValue("defaultSubdomainName", "app");
-    subdomainName = "app";
+  } else {
+    service.getStorage().setValue("defaultSubdomainName", subdomainName);
   }
-  console.log("subdomainId", subdomainId);
+
   console.log("subdomainName", subdomainName);
-  service.getStorage().setValue("defaultSubdomainId", subdomainId);
-  service.getStorage().setValue("defaultSubdomainName", subdomainName);
+
   return CardService.newActionResponseBuilder()
     .setStateChanged(true)
     .setNavigation(CardService.newNavigation().updateCard(createHome()))
@@ -73,16 +72,14 @@ const createAddMeetingCardSection = (subject: string) => {
 
   const subdomainResponse = fetchSubdomains();
   if (subdomainResponse.subdomains && subdomainResponse.subdomains.length > 0) {
-    let defaultSubdomainId = service
+    let defaultSubdomainName = service
       .getStorage()
-      .getValue("defaultSubdomainId");
+      .getValue("defaultSubdomainName");
     console.log("subdomainResponse exists", subdomainResponse);
-    console.log("defaultSubdomainId", defaultSubdomainId);
+    console.log("defaultSubdomainName", defaultSubdomainName);
 
-    if (!defaultSubdomainId) {
-      defaultSubdomainId = subdomainResponse.subdomains[0].id;
+    if (!defaultSubdomainName) {
       defaultSubdomainName = subdomainResponse.subdomains[0].name;
-      service.getStorage().setValue("defaultSubdomainId", defaultSubdomainId);
       service
         .getStorage()
         .setValue("defaultSubdomainName", defaultSubdomainName);
@@ -97,7 +94,7 @@ const createAddMeetingCardSection = (subject: string) => {
     const subdomainSwitch = CardService.newSelectionInput()
       .setType(CardService.SelectionInputType.DROPDOWN)
       .setTitle("Subdomain")
-      .setFieldName("subdomainId");
+      .setFieldName("subdomain");
 
     subdomainResponse.subdomains.push({
       id: "app",
@@ -114,8 +111,8 @@ const createAddMeetingCardSection = (subject: string) => {
       if (subdomain.name?.length !== 32) {
         subdomainSwitch.addItem(
           subdomain.name,
-          subdomain.id,
-          subdomain.id === defaultSubdomainId
+          subdomain.name,
+          subdomain.name === defaultSubdomainName
         );
       }
     });
@@ -158,26 +155,12 @@ function loginCallback(e) {
     title: e.formInput.huddle01_form_title,
   };
 
-  const defaultSubdomainId = service
-    .getStorage()
-    .getValue("defaultSubdomainId");
   const defaultSubdomainName = service
     .getStorage()
     .getValue("defaultSubdomainName");
 
-  if (!defaultSubdomainId) {
-    const subdomainResponse = fetchSubdomains();
-    const subdomain = subdomainResponse.subdomains[0]?.name;
-
-    if (subdomain) {
-      data.subdomain = subdomain;
-      service.getStorage().setValue("defaultSubdomainId", subdomain);
-    }
-  } else if (defaultSubdomainName?.length === 32) {
-    service.getStorage().setValue("defaultSubdomainId", null);
-    service.getStorage().setValue("defaultSubdomainName", null);
-  } else if (defaultSubdomainId !== "app") {
-    data.subdomain = defaultSubdomainId;
+  if (defaultSubdomainName) {
+    data.subdomain = defaultSubdomainName;
   }
 
   const { response } = createHuddleMeetingWithApi(data);

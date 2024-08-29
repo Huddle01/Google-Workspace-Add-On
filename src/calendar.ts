@@ -149,27 +149,12 @@ function create3rdPartyConference(calendarEvent) {
     roomLocked: true,
   };
 
-  const defaultSubdomainId = service
-    .getStorage()
-    .getValue("defaultSubdomainId");
   const defaultSubdomainName = service
     .getStorage()
     .getValue("defaultSubdomainName");
 
-  if (!defaultSubdomainId) {
-    const subdomainResponse = fetchSubdomains(address);
-
-    const subdomainId = subdomainResponse[0]?.id;
-
-    if (subdomainId) {
-      data.subdomainId = subdomainId;
-      service.getStorage().setValue("defaultSubdomainId", subdomainId);
-    }
-  } else if (defaultSubdomainName?.length === 32) {
-    service.getStorage().setValue("defaultSubdomainId", null);
-    service.getStorage().setValue("defaultSubdomainName", null);
-  } else if (defaultSubdomainId !== "app") {
-    data.subdomainId = defaultSubdomainId;
+  if (defaultSubdomainName) {
+    data.subdomain = defaultSubdomainName;
   }
 
   const { response } = createHuddleMeetingWithApi(data);
