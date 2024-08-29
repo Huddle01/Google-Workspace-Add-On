@@ -71,7 +71,6 @@ const createAddMeetingCardSection = (subject: string) => {
     address ? MyWalletAddress : MyEmailAddress
   );
 
-  // Todo: refactor this
   const subdomainResponse = fetchSubdomains();
   if (subdomainResponse.subdomains && subdomainResponse.subdomains.length > 0) {
     let defaultSubdomainId = service
@@ -100,7 +99,17 @@ const createAddMeetingCardSection = (subject: string) => {
       .setTitle("Subdomain")
       .setFieldName("subdomainId");
 
-    subdomainResponse.subdomains.push({ id: "app", name: "app", value: "app" });
+    subdomainResponse.subdomains.push({
+      id: "app",
+      name: "app",
+      url: "",
+      createdAt: "",
+      updatedAt: "",
+      apiKey: "",
+      projectId: "",
+      status: "",
+      platformHubId: "",
+    });
     subdomainResponse.subdomains.forEach((subdomain) => {
       if (subdomain.name?.length !== 32) {
         subdomainSwitch.addItem(
