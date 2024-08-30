@@ -66,9 +66,19 @@ const createAddMeetingCardSection = (subject: string) => {
   }
 
   const buttonSet = CardService.newButtonSet().addButton(button);
-  const cardSection = CardService.newCardSection().addWidget(
-    address ? MyWalletAddress : MyEmailAddress
-  );
+  const cardSection = CardService.newCardSection();
+
+  if (address) {
+    cardSection.addWidget(
+      CardService.newCardSection().addWidget(MyWalletAddress)
+    );
+  }
+
+  if (email) {
+    cardSection.addWidget(
+      CardService.newCardSection().addWidget(MyEmailAddress)
+    );
+  }
 
   const subdomainResponse = fetchSubdomains();
   if (subdomainResponse.subdomains && subdomainResponse.subdomains.length > 0) {
@@ -100,12 +110,6 @@ const createAddMeetingCardSection = (subject: string) => {
       id: "app",
       name: "app",
       url: "",
-      createdAt: "",
-      updatedAt: "",
-      apiKey: "",
-      projectId: "",
-      status: "",
-      platformHubId: "",
     });
     subdomainResponse.subdomains.forEach((subdomain) => {
       if (subdomain.name?.length !== 32) {

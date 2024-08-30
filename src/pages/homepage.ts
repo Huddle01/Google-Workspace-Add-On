@@ -3,7 +3,7 @@ const createHome = () => {
 
   const LoginButton = CardService.newTextButton()
     .setText("Login")
-    // .setBackgroundColor("blue")
+    .setBackgroundColor("blue")
     .setAuthorizationAction(
       CardService.newAuthorizationAction().setAuthorizationUrl(authUrl)
     )

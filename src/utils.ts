@@ -102,12 +102,6 @@ const fetchSubdomains = function () {
       id: string;
       url: string;
       name: string;
-      createdAt: string;
-      updatedAt: string;
-      apiKey: string;
-      projectId: string;
-      status: string;
-      platformHubId: string;
     }[];
     ok: true;
   };
