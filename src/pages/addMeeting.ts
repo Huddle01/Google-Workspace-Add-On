@@ -69,15 +69,11 @@ const createAddMeetingCardSection = (subject: string) => {
   const cardSection = CardService.newCardSection();
 
   if (address) {
-    cardSection.addWidget(
-      CardService.newCardSection().addWidget(MyWalletAddress)
-    );
+    cardSection.addWidget(MyWalletAddress);
   }
 
   if (email) {
-    cardSection.addWidget(
-      CardService.newCardSection().addWidget(MyEmailAddress)
-    );
+    cardSection.addWidget(MyEmailAddress);
   }
 
   const subdomainResponse = fetchSubdomains();
