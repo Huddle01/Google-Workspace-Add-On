@@ -69,7 +69,6 @@ function createConference(arg) {
       ------------------------------------<br>
 <b>Huddle01 Meeting Details</b><br>
 -----------------------------------<br><br>
-      <strong> Meeting Host : ${EMAIL} </strong><br><br>
       ${address ? addressString : ""}
       ${email ? emailString : ""}
       <strong> Join Huddle01 Meeting : ${conferenceInfo.videoUri}</strong>
