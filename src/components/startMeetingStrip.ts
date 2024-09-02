@@ -2,14 +2,25 @@ const camIcon = CardService.newIconImage().setIcon(
   CardService.Icon.VIDEO_CAMERA
 );
 
+const getSubdomainURL = (subdomainName: string) => {
+  if (subdomainName === "app") {
+    return `https://huddle01.app/`;
+  }
 
-const startMeetingStrip = (defaultSubdomainName:string)=>CardService.newDecoratedText()
-  .setText(`https://${defaultSubdomainName}.huddle01.com/`)
-  .setStartIcon(camIcon)
-  .setOpenLink(
-    CardService.newOpenLink()
-      .setUrl(`https://${defaultSubdomainName}.huddle01.com/`)
-      .setOpenAs(CardService.OpenAs.FULL_SIZE)
-      .setOnClose(CardService.OnClose.RELOAD_ADD_ON)
-  )
-  .setTopLabel("Start an instant Meeting");
+  return `https://${subdomainName}.huddle01.app/`;
+};
+
+const startMeetingStrip = (defaultSubdomainName: string) => {
+  const url = getSubdomainURL(defaultSubdomainName);
+
+  return CardService.newDecoratedText()
+    .setText(url)
+    .setStartIcon(camIcon)
+    .setOpenLink(
+      CardService.newOpenLink()
+        .setUrl(url)
+        .setOpenAs(CardService.OpenAs.FULL_SIZE)
+        .setOnClose(CardService.OnClose.RELOAD_ADD_ON)
+    )
+    .setTopLabel("Start an instant Meeting");
+};
