@@ -102,11 +102,6 @@ const createAddMeetingCardSection = (subject: string) => {
       .setTitle("Subdomain")
       .setFieldName("subdomain");
 
-    subdomainResponse.subdomains.push({
-      id: "app",
-      name: "app",
-      url: "",
-    });
     subdomainResponse.subdomains.forEach((subdomain) => {
       if (subdomain.name?.length !== 32) {
         subdomainSwitch.addItem(
