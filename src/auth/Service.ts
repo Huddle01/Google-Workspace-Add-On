@@ -453,7 +453,7 @@ class Service_ {
    */
   hasAccess = function () {
     var token = this.getToken();
-    if (token) return true;
+    if (token?.identityToken) return true;
     return false;
   };
 
