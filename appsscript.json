@@ -71,10 +71,9 @@
   "urlFetchWhitelist": [
     "https://wpss2zlpb9.execute-api.us-east-1.amazonaws.com/new-meeting",
     "https://us-central1-nfts-apis.cloudfunctions.net/createroom",
-    "https://gauth.huddle01.com/auth",
-    "https://platform-api-darshan.huddle01.workers.dev/api/v2/calendar/subdomains",
-    "https://platform-api-darshan.huddle01.workers.dev/api/v2/calendar/createMeeting",
-    "https://darshan.huddle01.app/g_auth"
+    "https://platform-api.huddle01.workers.dev/api/v2/calendar/subdomains",
+    "https://platform-api.huddle01.workers.dev/api/v2/calendar/createMeeting",
+    "https://huddle01.app/thirdparty_auth"
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"
