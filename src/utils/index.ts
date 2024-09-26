@@ -7,9 +7,10 @@ const checkAuth = () => {
 const getService = () => {
   return createService("Wallet01Login")
     .setAuthorizationBaseUrl(AUTH_BASE_URL)
-    .setTokenUrl(TOKEN_URL)
+    .setTokenUrl(API_ENDPOINT_URL)
     .setClientId(CLIENT_ID)
     .setClientSecret(CLIENT_SECRET)
+    .setParam("appName", "Gcal")
     .setCallbackFunction("authCallback")
     .setPropertyStore(PropertiesService.getUserProperties())
     .setCache(CacheService.getUserCache())

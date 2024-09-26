@@ -420,10 +420,12 @@ class Service_ {
    * @return {boolean} True if authorization was granted, false if it was denied.
    */
   handleCallback = function (callbackRequest) {
-    console.log('in handleCallback')
-    var code = callbackRequest.parameter.code;
+    console.log("in handleCallback");
+    var identityToken = callbackRequest.parameters.identityToken;
+
     var error = callbackRequest.parameter.error;
-console.log({code, error})
+    console.log({ identityToken, error });
+
     if (error) {
       if (error == "access_denied") {
         return false;
@@ -435,22 +437,10 @@ console.log({code, error})
       "Client ID": this.clientId_,
       "Token URL": this.tokenUrl_,
     });
-    var payload = {
-      code: code,
-      client_id: this.clientId_,
-      client_secret: this.clientSecret_,
-      redirect_uri: this.getRedirectUri(),
-      grant_type: "authorization_code",
-    };
-    console.log({payload})
-    if (callbackRequest.parameter.codeVerifier_) {
-      payload["code_verifier"] = callbackRequest.parameter.codeVerifier_;
-    }
-    var token = this.fetchToken_(payload);
-    console.log("handleCallbackToken", {token});
-
-    this.saveToken_(token);
-    console.log('handleCallback done')
+    this.saveToken_({
+      identityToken: identityToken[0],
+    });
+    console.log("handleCallback done");
     return true;
   };
 
@@ -463,37 +453,8 @@ console.log({code, error})
    */
   hasAccess = function () {
     var token = this.getToken();
-    if (token && !this.isExpired_(token)) return true; // Token still has access.
-    var canGetToken =
-      (token && this.canRefresh_(token)) || this.privateKey_ || this.grantType_;
-    if (!canGetToken) return false;
-
-    return this.lockable_(function () {
-      // Get the token again, bypassing the local memory cache.
-      token = this.getToken(true);
-      // Check to see if the token is no longer missing or expired, as another
-      // execution may have refreshed it while we were waiting for the lock.
-      if (token && !this.isExpired_(token)) return true; // Token now has access.
-      try {
-        if (token && this.canRefresh_(token)) {
-          this.refresh();
-          return true;
-        } else if (this.privateKey_) {
-          this.exchangeJwt_();
-          return true;
-        } else if (this.grantType_) {
-          this.exchangeGrant_();
-          return true;
-        } else {
-          // This should never happen, since canGetToken should have been false
-          // earlier.
-          return false;
-        }
-      } catch (e) {
-        this.lastError_ = e;
-        return false;
-      }
-    });
+    if (token?.identityToken) return true;
+    return false;
   };
 
   /**
@@ -507,7 +468,7 @@ console.log({code, error})
       throw new Error("Access not granted or expired.");
     }
     var token = this.getToken();
-    return token.access_token;
+    return token.identityToken;
   };
 
   /**
@@ -543,40 +504,6 @@ console.log({code, error})
   };
 
   /**
-   * Fetches a new token from the OAuth server.
-   * @param {Object} payload The token request payload.
-   * @param {string} [optUrl] The URL of the token endpoint.
-   * @return {Object} The parsed token.
-   */
-  fetchToken_ = function (payload, optUrl) {
-    // Use the configured token URL unless one is specified.
-    console.log('in fetch token')
-    var url = optUrl || this.tokenUrl_;
-    var headers = {
-      Accept: this.tokenFormat_,
-    };
-    if (this.tokenHeaders_) {
-      headers = extend_(headers, this.tokenHeaders_);
-    }
-    if (this.tokenPayloadHandler_) {
-      payload = this.tokenPayloadHandler_(payload);
-    }
-
-    console.log({payload,url,headers,tokenMethod_: this.tokenMethod_})
-
-    var response = UrlFetchApp.fetch(url, {
-      method: this.tokenMethod_,
-      contentType: "application/json",
-      headers: headers,
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true,
-    });
-    console.log({responseStr: response.getContentText()})
-    console.log('fetch token_ done')
-    return this.getTokenFromResponse_(response);
-  };
-
-  /**
    * Gets the token from a UrlFetchApp response.
    * @param {UrlFetchApp.HTTPResponse} response The response object.
    * @return {!Object} The parsed token.
@@ -584,14 +511,14 @@ console.log({code, error})
    * @private
    */
   getTokenFromResponse_ = function (response) {
-    console.log('getTokenFromResponse')
-var respContentText = response.getContentText();
-    console.log({respContentText})
+    console.log("getTokenFromResponse");
+    var respContentText = response.getContentText();
+    console.log({ respContentText });
     var token = this.parseToken_(response.getContentText());
-    console.log({token});
+    console.log({ token });
 
     var resCode = response.getResponseCode();
-    console.log({ resCode })
+    console.log({ resCode });
     if (resCode < 200 || resCode >= 300 || token.error) {
       var reason = [
         token.error,
@@ -620,28 +547,28 @@ var respContentText = response.getContentText();
    */
   parseToken_ = function (content) {
     var token;
-    console.log('in parsetoken_')
-    console.log({tokenfmt:this.tokenFormat_})
+    console.log("in parsetoken_");
+    console.log({ tokenfmt: this.tokenFormat_ });
     if (this.tokenFormat_ == TOKEN_FORMAT.JSON) {
-      console.log('in json')
+      console.log("in json");
       try {
         token = JSON.parse(content);
       } catch (e) {
         throw new Error("Token response not valid JSON: " + e);
       }
     } else if (this.tokenFormat_ == TOKEN_FORMAT.FORM_URL_ENCODED) {
-      console.log('in url encoded')
+      console.log("in url encoded");
       token = content.split("&").reduce(function (result, pair) {
         var parts = pair.split("=");
         result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
         return result;
       }, {});
     } else {
-      console.log('unknown fmt')
+      console.log("unknown fmt");
       throw new Error("Unknown token format: " + this.tokenFormat_);
     }
     this.ensureExpiresAtSet_(token);
-    console.log('parsetoken_ done')
+    console.log("parsetoken_ done");
     return token;
   };
 
@@ -870,40 +797,5 @@ var respContentText = response.getContentText();
       this.lock_.releaseLock();
     }
     return result;
-  };
-
-  /**
-   * Obtain an access token using the custom grant type specified. Most often
-   * this will be "client_credentials", and a client ID and secret are set an
-   * "Authorization: Basic ..." header will be added using those values.
-   */
-  exchangeGrant_ = function () {
-    validate_({
-      "Grant Type": this.grantType_,
-      "Token URL": this.tokenUrl_,
-    });
-    var payload = {
-      grant_type: this.grantType_,
-    };
-    payload = extend_(payload, this.params_);
-
-    // For the client_credentials grant type, add a basic authorization header:
-    // - If the client ID and client secret are set.
-    // - No authorization header has been set yet.
-    var lowerCaseHeaders = toLowerCaseKeys_(this.tokenHeaders_);
-    if (
-      this.grantType_ === "client_credentials" &&
-      this.clientId_ &&
-      this.clientSecret_ &&
-      (!lowerCaseHeaders || !lowerCaseHeaders.authorization)
-    ) {
-      this.tokenHeaders_ = this.tokenHeaders_ || {};
-      this.tokenHeaders_.authorization =
-        "Basic " +
-        Utilities.base64Encode(this.clientId_ + ":" + this.clientSecret_);
-    }
-
-    var token = this.fetchToken_(payload);
-    this.saveToken_(token);
   };
 }

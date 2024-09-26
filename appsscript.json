@@ -17,7 +17,7 @@
   "addOns": {
     "common": {
       "name": "Huddle01 for Google Workspace",
-      "logoUrl": "https://lh3.googleusercontent.com/-HlLH08aKOjY/Y2HuOAnnwiI/AAAAAAAAANc/48QnIMbRzRMDXxjVwcAa8KhJZ-uRnpqqwCNcBGAsYHQ/s400/128_128.png",
+      "logoUrl": "https://framerusercontent.com/images/DF5rifVBfArY4jVBhQSjvv5Wc84.png",
       "useLocaleFromApp": true,
       "homepageTrigger": {
         "runFunction": "onHomepage",
@@ -35,7 +35,7 @@
         {
           "id": 1,
           "name": "Huddle01 Meeting",
-          "logoUrl": "https://lh3.googleusercontent.com/-HlLH08aKOjY/Y2HuOAnnwiI/AAAAAAAAANc/48QnIMbRzRMDXxjVwcAa8KhJZ-uRnpqqwCNcBGAsYHQ/s400/128_128.png",
+          "logoUrl": "https://framerusercontent.com/images/DF5rifVBfArY4jVBhQSjvv5Wc84.png",
           "onCreateFunction": "createConference"
         }
       ]
@@ -59,6 +59,7 @@
     }
   },
   "oauthScopes": [
+    "https://www.googleapis.com/auth/calendar.events",
     "https://www.googleapis.com/auth/calendar.addons.execute",
     "https://www.googleapis.com/auth/script.external_request",
     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
@@ -70,10 +71,9 @@
   "urlFetchWhitelist": [
     "https://wpss2zlpb9.execute-api.us-east-1.amazonaws.com/new-meeting",
     "https://us-central1-nfts-apis.cloudfunctions.net/createroom",
-    "https://iriko.testing.huddle01.com/verify",
-    "https://gauth.huddle01.com/auth",
-    "https://api.huddle01.com/api/v1/admin/create-meeting",
-    "https://api.huddle01.com/api/v1/admin/get-subdomain"
+    "https://platform-api.huddle01.workers.dev/api/v2/calendar/subdomains",
+    "https://platform-api.huddle01.workers.dev/api/v2/calendar/createMeeting",
+    "https://huddle01.app/thirdparty_auth"
   ],
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"

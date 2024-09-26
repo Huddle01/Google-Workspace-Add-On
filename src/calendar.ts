@@ -21,6 +21,8 @@ function createConference(arg) {
   const calendarId = eventData.calendarId;
   const eventId = eventData.eventId;
 
+  console.log("CREATING CONFRENCEEE", arg);
+
   // Retrieve the Calendar event information using the Calendar
   // Advanced service.
   var calendarEvent;
@@ -48,29 +50,30 @@ function createConference(arg) {
   if (!conferenceInfo.error) {
     // No error, so build the ConferenceData object from the
     // returned conference info.
-    ;
-
-    dataBuilder
-      .setConferenceId(conferenceInfo.id)
+    dataBuilder.setConferenceId(conferenceInfo.id);
 
     if (conferenceInfo.videoUri) {
       const meetingId = ConferenceDataService.newConferenceParameter()
-      .setKey("ID")
-      .setValue(conferenceInfo.videoUri)
+        .setKey("ID")
+        .setValue(conferenceInfo.videoUri);
       dataBuilder.addConferenceParameter(meetingId);
 
       const address = getService().getStorage().getValue("address");
-      
+      const email = getService().getStorage().getValue("email");
+
+      const addressString = `<strong> Host Wallet Address : ${address} </strong><br><br>`;
+      const emailString = `<strong> Host Email Address : ${email} </strong><br><br>`;
+
       const meetingNotes = `
      <font color="#767676">
       ------------------------------------<br>
 <b>Huddle01 Meeting Details</b><br>
 -----------------------------------<br><br>
-      <strong> Meeting Host : ${EMAIL} </strong><br><br>
-     <strong> Host Wallet Address : ${address} </strong><br><br>
+      ${address ? addressString : ""}
+      ${email ? emailString : ""}
       <strong> Join Huddle01 Meeting : ${conferenceInfo.videoUri}</strong>
          </font>
-      `; 
+      `;
       dataBuilder.setNotes(meetingNotes);
 
       var videoEntryPoint = ConferenceDataService.newEntryPoint()
@@ -134,54 +137,38 @@ function create3rdPartyConference(calendarEvent) {
   const service = getService();
 
   const address = service.getStorage().getValue("address");
-
-  if (!address) {
+  const email = service.getStorage().getValue("email");
+  if (!address && !email) {
     return { error: "AUTH" };
   }
-  
-  const data:any = {
+
+  const data: any = {
     title: "GCal Meeting",
-    createdFrom: "OTHER",
-    otherSource: "GCAL",
-    hostWallets: [address.toLowerCase()],
+    // hostWallets: [address.toLowerCase()],
     roomLocked: true,
   };
 
-  const defaultSubdomainId = service.getStorage().getValue("defaultSubdomainId");
-  const defaultSubdomainName = service.getStorage().getValue("defaultSubdomainName");
+  const defaultSubdomainName = service
+    .getStorage()
+    .getValue("defaultSubdomainName");
 
-
-  if(!defaultSubdomainId){
-    const subdomainResponse = fetchSubdomains(address);
-
-
-    const subdomainId = subdomainResponse[0]?.id;
-
-    if(subdomainId){
-      data.subdomainId =subdomainId;
-    service.getStorage().setValue("defaultSubdomainId", subdomainId);
-    }
-  }else if (defaultSubdomainName?.length===32){
-    service.getStorage().setValue("defaultSubdomainId", null);
-    service.getStorage().setValue("defaultSubdomainName", null);
-  }
-  else if(defaultSubdomainId!=="app"){
-      data.subdomainId =defaultSubdomainId;
+  if (defaultSubdomainName) {
+    data.subdomain = defaultSubdomainName;
   }
 
-  const responseHuddle = createHuddleMeetingWithApi(data);
+  const { response } = createHuddleMeetingWithApi(data);
 
-  const jsonObjHuddle = JSON.parse(responseHuddle.response);
+  const [_, id] = response.meetingLink.split("/");
 
   console.log("Huddle Response Obj :", {
-    id: jsonObjHuddle.roomId,
-    videoUri: jsonObjHuddle.data.meetingLink,
+    id: id,
+    videoUri: response.meetingLink,
     data,
   });
 
   return {
-    id: jsonObjHuddle.data.roomId,
-    videoUri: jsonObjHuddle.data.meetingLink,
+    id: id,
+    videoUri: response.meetingLink,
   };
 }
 

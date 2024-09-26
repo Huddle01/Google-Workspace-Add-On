@@ -49,51 +49,61 @@ function handleSwitchChange() {
   lockRoom = !lockRoom;
 }
 
-const fetchSubdomains = (address: string) => {
-  const GET_SUBDOMAIN_ID_LINK = "https://api.huddle01.com/api/v1/admin/get-subdomain"
-  const GET_SUBDOMAIN_ID_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions = {
+const createHuddleMeetingWithApi = (data: {
+  title?: string;
+  subdomain?: string;
+}) => {
+  const service = getService();
+  const { identityToken } = service.getToken(false);
+
+  console.log("subdomain fetching identityToken ~>", identityToken);
+
+  const CREATE_NEW_ROOM_LINK = `${API_ENDPOINT_URL}/createMeeting`;
+
+  const responseHuddle = UrlFetchApp.fetch(CREATE_NEW_ROOM_LINK, {
     method: "post",
     headers: {
       "Content-Type": "application/json",
-      "x-api-key": HUDDLE_API_KEY,
-    },
-    payload: JSON.stringify({ walletAddress: address.toLowerCase() })
-  };
-
-  const subdomainResponse = UrlFetchApp.fetch(
-    GET_SUBDOMAIN_ID_LINK,
-    GET_SUBDOMAIN_ID_OPTIONS
-  )
-
-  const parsedSubdomainResponse = JSON.parse(subdomainResponse.getContentText())
-  console.log({ parsedSubdomainResponse })
-  // add a subdomain with id app
-  return parsedSubdomainResponse.subdomain
-}
-
-const createHuddleMeetingWithApi = (data) => {
-
-  const CREATE_NEW_ROOM_LINK =
-    "https://api.huddle01.com/api/v1/admin/create-meeting";
-
-  const CREATE_NEW_ROOM_OPTIONS: GoogleAppsScript.URL_Fetch.URLFetchRequestOptions =
-  {
-    method: "post",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": HUDDLE_API_KEY,
+      "x-api-key": HUDDLE_THIRD_PARTY_API_KEY,
+      "x-identity-token": identityToken,
     },
     payload: JSON.stringify({ ...data }),
+  });
+
+  const response = JSON.parse(responseHuddle.getContentText()) as {
+    roomId: string;
+    meetingLink: string;
   };
 
+  console.log("CREATE MEETING RESPONSE", response);
 
+  return { response };
+};
 
-  const responseHuddle = UrlFetchApp.fetch(
-    CREATE_NEW_ROOM_LINK,
-    CREATE_NEW_ROOM_OPTIONS
-  );
-  console.log(responseHuddle.getContentText())
+const fetchSubdomains = function () {
+  const service = getService();
+  const { identityToken } = service.getToken(false);
 
+  const GET_SUBDOMAIN_LIST = `${API_ENDPOINT_URL}/subdomains`;
 
-  return { response: responseHuddle.getContentText() };
+  const response = UrlFetchApp.fetch(GET_SUBDOMAIN_LIST, {
+    method: "get",
+    contentType: "application/json",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": HUDDLE_THIRD_PARTY_API_KEY,
+      "x-identity-token": identityToken,
+    },
+    muteHttpExceptions: true,
+  });
+
+  const data = JSON.parse(response.getContentText()) as {
+    subdomains: {
+      id: string;
+      url: string;
+      name: string;
+    }[];
+    ok: true;
+  };
+  return data;
 };
