@@ -17,7 +17,7 @@
   "addOns": {
     "common": {
       "name": "Huddle01 for Google Workspace",
-      "logoUrl": "https://framerusercontent.com/images/DF5rifVBfArY4jVBhQSjvv5Wc84.png",
+      "logoUrl": "https://dy95p8aq490x0.cloudfront.net/huddle01_logo.png",
       "useLocaleFromApp": true,
       "homepageTrigger": {
         "runFunction": "onHomepage",
@@ -35,7 +35,7 @@
         {
           "id": 1,
           "name": "Huddle01 Meeting",
-          "logoUrl": "https://framerusercontent.com/images/DF5rifVBfArY4jVBhQSjvv5Wc84.png",
+          "logoUrl": "https://dy95p8aq490x0.cloudfront.net/huddle01_logo.png",
           "onCreateFunction": "createConference"
         }
       ]
