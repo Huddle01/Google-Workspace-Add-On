@@ -59,7 +59,6 @@
     }
   },
   "oauthScopes": [
-    "https://www.googleapis.com/auth/calendar.events",
     "https://www.googleapis.com/auth/calendar.addons.execute",
     "https://www.googleapis.com/auth/script.external_request",
     "https://www.googleapis.com/auth/gmail.addons.current.action.compose",
