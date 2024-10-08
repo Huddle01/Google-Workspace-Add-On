@@ -25,23 +25,19 @@ function createConference(arg) {
 
   // Retrieve the Calendar event information using the Calendar
   // Advanced service.
-  var calendarEvent;
-  try {
-    calendarEvent = Calendar.Events.get(calendarId, eventId);
-  } catch (err) {
-    // The calendar event does not exist just yet; just proceed with the
-    // given event ID and allow the event details to sync later.
-    console.log(err);
-    calendarEvent = {
-      id: eventId,
-    };
-  }
+
+  // try {
+  //   calendarEvent = Calendar.Events.get(calendarId, eventId);
+  // } catch (err) {
+  //   // The calendar event does not exist just yet; just proceed with the
+  //   // given event ID and allow the event details to sync later.
+  //   console.log(err);
+  //   calendarEvent =
+  // }
 
   // Create a conference on the third-party service and return the
   // conference data or errors in a custom JSON object.
-  var conferenceInfo = create3rdPartyConference(
-    calendarEvent
-  ) as IConferenceInfo;
+  var conferenceInfo = create3rdPartyConference() as IConferenceInfo;
 
   // Build and return a ConferenceData object, either with conference or
   // error information.
